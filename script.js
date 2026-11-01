@@ -76,32 +76,34 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // --- 4. FAST CACHED API CLIENT ---
+    // --- 4. FAST CACHED API CLIENT WITH STRICT JSON:API HEADERS ---
     const API_CACHE = new Map();
     const CACHE_TTL_MS = 6 * 60 * 1000; // 6-minute cache
 
-    async function kitsuFetch(url) {
+    function kitsuFetch(url) {
         if (API_CACHE.has(url)) {
             const cached = API_CACHE.get(url);
             if (Date.now() - cached.timestamp < CACHE_TTL_MS) {
-                return cached.data;
+                return Promise.resolve(cached.data);
             }
         }
 
-        const res = await fetch(url, {
+        return fetch(url, {
             headers: {
                 'Accept': 'application/vnd.api+json',
                 'Content-Type': 'application/vnd.api+json'
             }
+        })
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`Kitsu API error: ${res.status} ${res.statusText}`);
+            }
+            return res.json();
+        })
+        .then(jsonResponse => {
+            API_CACHE.set(url, { timestamp: Date.now(), data: jsonResponse });
+            return jsonResponse;
         });
-
-        if (!res.ok) {
-            throw new Error(`Kitsu API error: ${res.status} ${res.statusText}`);
-        }
-
-        const data = await res.json();
-        API_CACHE.set(url, { timestamp: Date.now(), data });
-        return data;
     }
 
     // --- 5. A-Z LIST GENERATOR ---
@@ -307,8 +309,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const container = document.getElementById(containerId);
         if (!container) return Promise.resolve();
         
-        return kitsuFetch(url).then(json => {
-            const list = (json.data || []).map(normalizeKitsuAnime).filter(Boolean).slice(0, 5);
+        return kitsuFetch(url).then(jsonResponse => {
+            // Unpack Kitsu JSON:API list (inside jsonResponse.data or nested jsonResponse.data.data)
+            const animeList = jsonResponse?.data?.data || jsonResponse?.data || [];
+            const list = (Array.isArray(animeList) ? animeList : []).map(normalizeKitsuAnime).filter(Boolean).slice(0, 5);
             container.innerHTML = ""; 
             
             list.forEach((anime, index) => {
@@ -426,8 +430,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         kitsuFetch(queryUrl)
-            .then(json => {
-                const list = (json.data || []).map(normalizeKitsuAnime).filter(Boolean);
+            .then(jsonResponse => {
+                // Ensure array mapping whether list is in data or nested data.data
+                const animeList = jsonResponse?.data?.data || jsonResponse?.data || [];
+                const list = (Array.isArray(animeList) ? animeList : []).map(normalizeKitsuAnime).filter(Boolean);
                 
                 if (shouldInitSpotlight && list.length > 0) {
                     initSpotlight(list);
@@ -436,7 +442,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderGrid(list);
 
                 // Compute pagination from Kitsu meta.count
-                const totalCount = json.meta?.count || list.length;
+                const totalCount = jsonResponse?.meta?.count || list.length;
                 const totalPages = Math.min(Math.ceil(totalCount / PAGE_LIMIT), 25);
                 renderPagination(totalPages, page);
             })
@@ -565,15 +571,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // Always fetch trending spotlight on home page load
     if (heroBanner) {
         kitsuFetch("https://kitsu.io/api/edge/trending/anime?limit=8")
-            .then(json => {
-                const list = (json.data || []).map(normalizeKitsuAnime).filter(Boolean);
+            .then(jsonResponse => {
+                const animeList = jsonResponse?.data?.data || jsonResponse?.data || [];
+                const list = (Array.isArray(animeList) ? animeList : []).map(normalizeKitsuAnime).filter(Boolean);
                 if (list.length > 0) initSpotlight(list);
             })
             .catch(() => {
                 // Spotlight fallback
                 kitsuFetch("https://kitsu.io/api/edge/anime?sort=-userCount&page[limit]=5")
-                    .then(json => {
-                        const list = (json.data || []).map(normalizeKitsuAnime).filter(Boolean);
+                    .then(jsonResponse => {
+                        const animeList = jsonResponse?.data?.data || jsonResponse?.data || [];
+                        const list = (Array.isArray(animeList) ? animeList : []).map(normalizeKitsuAnime).filter(Boolean);
                         if (list.length > 0) initSpotlight(list);
                     })
                     .catch(e => console.error("Spotlight fallback error:", e));
@@ -615,7 +623,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const randomOffset = Math.floor(Math.random() * 150);
             kitsuFetch(`https://kitsu.io/api/edge/anime?sort=-userCount&page[limit]=1&page[offset]=${randomOffset}`)
                 .then(res => {
-                    const randomId = res?.data?.[0]?.id;
+                    const animeList = res?.data?.data || res?.data || [];
+                    const randomItem = Array.isArray(animeList) ? animeList[0] : null;
+                    const randomId = randomItem?.id;
                     if (randomId) {
                         window.location.href = `info.html?id=${randomId}`;
                     } else {

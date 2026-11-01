@@ -66,8 +66,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         const [animeRes, castRes] = await Promise.all([
-            fetch(ANIME_API, { headers: { 'Accept': 'application/vnd.api+json' } }),
-            fetch(CAST_API, { headers: { 'Accept': 'application/vnd.api+json' } })
+            fetch(ANIME_API, {
+                headers: {
+                    'Accept': 'application/vnd.api+json',
+                    'Content-Type': 'application/vnd.api+json'
+                }
+            }),
+            fetch(CAST_API, {
+                headers: {
+                    'Accept': 'application/vnd.api+json',
+                    'Content-Type': 'application/vnd.api+json'
+                }
+            })
         ]);
 
         if (!animeRes.ok) throw new Error("Anime API not found");
@@ -78,7 +88,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             try { castJson = await castRes.json(); } catch (e) {}
         }
 
-        const attr = animeJson.data?.attributes;
+        const rawData = animeJson?.data?.data || animeJson?.data || animeJson;
+        const attr = rawData?.attributes || rawData;
         if (!attr) throw new Error("Malformed anime data");
 
         animeTitle = attr.canonicalTitle || attr.titles?.en || attr.titles?.en_jp || "Untitled Anime";

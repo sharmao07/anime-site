@@ -412,18 +412,23 @@
             const arrow = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>`;
 
             fetch('https://kitsu.io/api/edge/categories?page[limit]=40&sort=-totalMediaCount', {
-                headers: { 'Accept': 'application/vnd.api+json' }
+                headers: {
+                    'Accept': 'application/vnd.api+json',
+                    'Content-Type': 'application/vnd.api+json'
+                }
             })
                 .then(res => {
                     if (!res.ok) throw new Error('request failed');
                     return res.json();
                 })
                 .then(data => {
-                    const genres = (data.data || [])
+                    const rawCategories = data?.data?.data || data?.data || [];
+                    const categoryList = Array.isArray(rawCategories) ? rawCategories : [];
+                    const genres = categoryList
                         .map(item => ({
-                            slug: item.attributes.slug,
-                            name: item.attributes.title,
-                            count: item.attributes.totalMediaCount || 0
+                            slug: item.attributes?.slug || item.slug,
+                            name: item.attributes?.title || item.title || item.attributes?.name,
+                            count: item.attributes?.totalMediaCount || item.totalMediaCount || 0
                         }))
                         .filter(g => g.count > 50)
                         .sort((a, b) => a.name.localeCompare(b.name));

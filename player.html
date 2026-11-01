@@ -651,10 +651,16 @@
 
         // Rich metadata: synopsis + a backdrop fallback via Kitsu
         if (malId) {
-            fetch(`https://kitsu.io/api/edge/anime/${malId}`, { headers: { 'Accept': 'application/vnd.api+json' } })
+            fetch(`https://kitsu.io/api/edge/anime/${malId}`, {
+                headers: {
+                    'Accept': 'application/vnd.api+json',
+                    'Content-Type': 'application/vnd.api+json'
+                }
+            })
                 .then(res => res.json())
                 .then(response => {
-                    const data = response?.data?.attributes;
+                    const rawData = response?.data?.data || response?.data || response;
+                    const data = rawData?.attributes || rawData;
                     if (!data) return;
 
                     if (!titleParam) {
@@ -686,10 +692,16 @@
 
         // Episode queue via Kitsu
         if (malId) {
-            fetch(`https://kitsu.io/api/edge/anime/${malId}/episodes?page[limit]=24`, { headers: { 'Accept': 'application/vnd.api+json' } })
+            fetch(`https://kitsu.io/api/edge/anime/${malId}/episodes?page[limit]=24`, {
+                headers: {
+                    'Accept': 'application/vnd.api+json',
+                    'Content-Type': 'application/vnd.api+json'
+                }
+            })
                 .then(res => res.json())
                 .then(response => {
-                    const episodes = response.data || [];
+                    const rawEpisodes = response?.data?.data || response?.data || [];
+                    const episodes = Array.isArray(rawEpisodes) ? rawEpisodes : [];
                     if (episodes.length === 0) {
                         generateFallbackList();
                         return;
