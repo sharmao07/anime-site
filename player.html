@@ -649,25 +649,25 @@
         restorePlayerId();
         setTimeout(restorePlayerId, 0);
 
-        // Rich metadata: synopsis + a backdrop fallback
+        // Rich metadata: synopsis + a backdrop fallback via Kitsu
         if (malId) {
-            fetch(`https://api.jikan.moe/v4/anime/${malId}/full`)
+            fetch(`https://kitsu.io/api/edge/anime/${malId}`, { headers: { 'Accept': 'application/vnd.api+json' } })
                 .then(res => res.json())
                 .then(response => {
-                    const data = response?.data;
+                    const data = response?.data?.attributes;
                     if (!data) return;
 
                     if (!titleParam) {
-                        animeTitle = data.title_english || data.title || animeTitle;
+                        animeTitle = data.canonicalTitle || data.titles?.en || data.titles?.en_jp || animeTitle;
                         headerTitle.textContent = animeTitle;
                         mainTitle.textContent = animeTitle;
                         document.title = `Watch ${animeTitle} — Anime.TV`;
                         saveHistory(currentEpisode);
                     }
                     if (data.synopsis) synopsisEl.textContent = data.synopsis;
-                    if (!artwork) artwork = data.images?.jpg?.large_image_url || '';
+                    if (!artwork) artwork = data.posterImage?.large || data.posterImage?.original || '';
                     if (!backdropEl.classList.contains('is-on')) {
-                        applyBackdrop(data.trailer?.images?.maximum_image_url || data.images?.jpg?.large_image_url);
+                        applyBackdrop(data.coverImage?.large || data.coverImage?.original || artwork);
                     }
                 })
                 .catch(() => { /* synopsis is optional */ });
@@ -681,12 +681,12 @@
                     const hit = tmdbSearch.results?.find(item => item.backdrop_path);
                     if (hit) applyBackdrop(`https://image.tmdb.org/t/p/original${hit.backdrop_path}`);
                 })
-                .catch(() => { /* fall back to Jikan art */ });
+                .catch(() => { /* fall back to Kitsu art */ });
         }
 
-        // Episode queue
+        // Episode queue via Kitsu
         if (malId) {
-            fetch(`https://api.jikan.moe/v4/anime/${malId}/episodes`)
+            fetch(`https://kitsu.io/api/edge/anime/${malId}/episodes?page[limit]=24`, { headers: { 'Accept': 'application/vnd.api+json' } })
                 .then(res => res.json())
                 .then(response => {
                     const episodes = response.data || [];
@@ -700,8 +700,8 @@
                     countBadge.textContent = `01 / ${pad(totalEpisodes)}`;
 
                     episodes.forEach((episode, index) => {
-                        const number = episode.mal_id || index + 1;
-                        const displayTitle = episode.title || `Episode ${number}`;
+                        const number = episode.attributes?.number || index + 1;
+                        const displayTitle = episode.attributes?.canonicalTitle || `Episode ${number}`;
                         const row = buildEpisodeRow(number, `${number}. ${displayTitle}`);
                         if (index === 0) row.classList.add('is-active');
                         queueListContainer.appendChild(row);

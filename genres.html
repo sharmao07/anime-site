@@ -411,14 +411,21 @@
 
             const arrow = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>`;
 
-            fetch('https://api.jikan.moe/v4/genres/anime')
+            fetch('https://kitsu.io/api/edge/categories?page[limit]=40&sort=-totalMediaCount', {
+                headers: { 'Accept': 'application/vnd.api+json' }
+            })
                 .then(res => {
                     if (!res.ok) throw new Error('request failed');
                     return res.json();
                 })
                 .then(data => {
                     const genres = (data.data || [])
-                        .filter(g => g.count > 100)
+                        .map(item => ({
+                            slug: item.attributes.slug,
+                            name: item.attributes.title,
+                            count: item.attributes.totalMediaCount || 0
+                        }))
+                        .filter(g => g.count > 50)
                         .sort((a, b) => a.name.localeCompare(b.name));
 
                     genreGrid.innerHTML = '';
@@ -426,7 +433,7 @@
 
                     genres.forEach((g, index) => {
                         const card = document.createElement('a');
-                        card.href = `home.html?genre_id=${g.mal_id}&genre_name=${encodeURIComponent(g.name)}`;
+                        card.href = `home.html?genres=${encodeURIComponent(g.slug)}&genre_name=${encodeURIComponent(g.name)}`;
                         card.className = 'genre-card';
                         card.setAttribute('aria-label', `${g.name}, ${g.count.toLocaleString()} shows`);
                         card.innerHTML = `
@@ -436,14 +443,14 @@
                             </span>
                             <span>
                                 <span class="genre-name">${g.name}</span>
-                                <span class="genre-count">${g.count.toLocaleString()} shows</span>
+                                <span class="genre-count">${g.count.toLocaleString()} titles</span>
                             </span>
                         `;
                         genreGrid.appendChild(card);
                     });
 
                     genreCount.textContent = genres.length;
-                    genreStatus.textContent = `${genres.length} categories · sorted A–Z`;
+                    genreStatus.textContent = `${genres.length} categories · indexed live`;
                 })
                 .catch(() => {
                     genreGrid.innerHTML = '<p class="col-span-full py-16 text-center font-mono text-[12px] text-[var(--text-3)]">Categories could not be loaded. Please refresh in a moment.</p>';

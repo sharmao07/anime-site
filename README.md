@@ -5,7 +5,7 @@
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![JavaScript](https://img.shields.io/badge/Vanilla_JS-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Jikan API](https://img.shields.io/badge/Jikan_v4-MyAnimeList-2E51A2?style=for-the-badge)](https://jikan.moe/)
+[![Kitsu API](https://img.shields.io/badge/Kitsu_API-v4_JSON:API-FD755C?style=for-the-badge)](https://kitsu.io/)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
 An award-winning, state-of-the-art anime streaming and exploration interface crafted entirely with **Vanilla JavaScript (ES6+)**, **HTML5**, and **Tailwind CSS**. Designed in the visual language of next-generation entertainment platforms (Netflix, Crunchyroll, Disney+, Max), Anime.TV fuses high-density metadata browsing with fluid micro-interactions, cinematic backdrops, and resilient API data fetching.
@@ -53,11 +53,11 @@ An award-winning, state-of-the-art anime streaming and exploration interface cra
 
 ## 🛡️ API Resilience & Reliability
 
-The application connects to the open **Jikan API v4 (MyAnimeList)** and **AniList GraphQL**:
+The application connects to the **Kitsu API v4 (JSON:API)**:
 
-* **Automatic 429 Rate-Limit Handling:** Automatically detects HTTP 429 responses, invokes exponential backoff with jitter, and retries seamlessly without failing silently.
-* **Client-Side Session Caching:** Frequently queried endpoints (Trending, Top Movies, Seasons) are cached in `sessionStorage` with a 5-minute TTL to drastically cut down network roundtrips.
-* **Staggered Sequential Fetching:** Secondary sidebar feeds are throttled with intentional micro-delays (1,200ms) to ensure concurrent requests never overwhelm external rate limits.
+* **Zero Rate-Limiting Delays:** High-throughput streaming metadata with immediate response times.
+* **Integrated Key Art Pipeline:** High-resolution landscape covers and 2:3 vertical posters delivered directly without multi-hop queries.
+* **Client-Side In-Memory & Session Caching:** Frequently queried endpoints (Trending, Top Movies, Seasons) are cached with a 6-minute TTL to minimize network roundtrips.
 
 ---
 
