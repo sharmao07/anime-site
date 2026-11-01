@@ -2,33 +2,87 @@ document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const jikanId = urlParams.get('id');
 
+    // --- MODAL CONTROLS (defined up-front so the button is always live) ---
+    const serverModal = document.getElementById('server-modal');
+
+    window.openServerModal = function() {
+        if (!serverModal) return;
+        serverModal.classList.remove('hidden');
+        document.documentElement.style.overflow = 'hidden';
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => serverModal.classList.remove('opacity-0'));
+        });
+    };
+
+    window.closeServerModal = function() {
+        if (!serverModal) return;
+        serverModal.classList.add('opacity-0');
+        setTimeout(() => {
+            serverModal.classList.add('hidden');
+            document.documentElement.style.overflow = '';
+        }, 300);
+    };
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape' || !serverModal || serverModal.classList.contains('hidden')) return;
+        window.closeServerModal();
+    });
+
+    const titleEl = document.getElementById('anime-title');
+    const descEl = document.getElementById('anime-desc');
+    const badgesEl = document.getElementById('anime-badges');
+    const cover = document.getElementById('anime-cover');
+
     if (!jikanId) {
-        document.getElementById('anime-title').textContent = "No Anime Selected";
+        titleEl.textContent = "No title selected";
+        descEl.textContent = "Open a title from the catalog to see its synopsis, cast and streaming sources.";
+        badgesEl.innerHTML = `<span class="chip">Nothing loaded</span>`;
+        const castContainer = document.getElementById('cast-list');
+        if (castContainer) castContainer.innerHTML = `<p class="detail-note">PICK A TITLE FIRST</p>`;
+        document.getElementById('trailer-container').innerHTML = `
+            <div class="trailer-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="m10 8 6 4-6 4V8Z"/><rect x="3" y="4" width="18" height="16" rx="3"/></svg>
+                NO TITLE SELECTED
+            </div>`;
         return;
     }
 
     // --- APIs ---
     const JIKAN_API = `https://api.jikan.moe/v4/anime/${jikanId}/full`;
     const CAST_API = `https://api.jikan.moe/v4/anime/${jikanId}/characters`;
-    
+
     let animeTitle = "";
 
     try {
         // 1. POPULATE UI
         const [animeRes, castRes] = await Promise.all([fetch(JIKAN_API), fetch(CAST_API)]);
         if (!animeRes.ok) throw new Error("Anime API rate limit");
-        
+
         const animeData = await animeRes.json();
-        const castData = await castRes.json();
+        let castData = { data: [] };
+        if (castRes.ok) {
+            try { castData = await castRes.json(); } catch (error) { /* keep empty fallback */ }
+        }
         const anime = animeData.data;
 
-        animeTitle = anime.title_english || anime.title;
-        document.getElementById('anime-title').textContent = animeTitle;
-        document.getElementById('anime-desc').textContent = anime.synopsis || "No synopsis available.";
-        
-        const cover = document.getElementById('anime-cover');
-        cover.src = anime.images?.jpg?.large_image_url || '';
+        animeTitle = anime.title_english || anime.title || "Untitled";
+        document.title = `${animeTitle} — Anime.TV`;
+        titleEl.textContent = animeTitle;
+        descEl.textContent = anime.synopsis || "No synopsis available.";
+
+        const coverUrl = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || '';
+        cover.alt = `${animeTitle} poster`;
         cover.onload = () => cover.classList.remove('hidden');
+        cover.onerror = () => {
+            cover.classList.add('hidden');
+            cover.removeAttribute('src');
+        };
+        if (coverUrl) {
+            cover.src = coverUrl;
+            if (cover.complete && cover.naturalWidth > 0) cover.classList.remove('hidden');
+        } else {
+            cover.classList.add('hidden');
+        }
 
         const backdropUrl = anime.trailer?.images?.maximum_image_url || anime.images?.jpg?.large_image_url;
         const backdrop = document.getElementById('backdrop-container');
@@ -38,38 +92,44 @@ document.addEventListener("DOMContentLoaded", async () => {
             backdrop.classList.add('opacity-100');
         }
 
-        let badgesHTML = ``;
-        if (anime.score) badgesHTML += `<span class="bg-yellow-500/20 text-yellow-500 px-2.5 py-1 rounded-md border border-yellow-500/30 shadow-sm">★ ${anime.score}</span>`;
-        if (anime.rating) badgesHTML += `<span class="bg-zinc-800 text-zinc-300 px-2.5 py-1 rounded-md">${anime.rating.split(' ')[0]}</span>`;
-        if (anime.type) badgesHTML += `<span class="bg-zinc-800 text-zinc-300 px-2.5 py-1 rounded-md">${anime.type}</span>`;
-        if (anime.year) badgesHTML += `<span class="bg-zinc-800 text-zinc-300 px-2.5 py-1 rounded-md">${anime.year}</span>`;
-        if (anime.status) badgesHTML += `<span class="bg-zinc-800 text-zinc-300 px-2.5 py-1 rounded-md">${anime.status}</span>`;
-        document.getElementById('anime-badges').innerHTML = badgesHTML;
+        const chips = [];
+        if (anime.score) chips.push(`<span class="chip chip-accent">★ ${Number(anime.score).toFixed(1)}</span>`);
+        if (anime.rating) chips.push(`<span class="chip">${anime.rating.split(' ')[0]}</span>`);
+        if (anime.type) chips.push(`<span class="chip">${anime.type}</span>`);
+        if (anime.year) chips.push(`<span class="chip">${anime.year}</span>`);
+        if (anime.episodes) chips.push(`<span class="chip">${anime.episodes} ep</span>`);
+        if (anime.status) chips.push(`<span class="chip">${anime.status}</span>`);
+        badgesEl.innerHTML = chips.join('') || `<span class="chip">Unrated</span>`;
 
         document.getElementById('action-buttons').classList.remove('hidden');
 
         if (anime.trailer?.embed_url) {
-            document.getElementById('trailer-container').innerHTML = `<iframe src="${anime.trailer.embed_url}?autoplay=0&controls=1&modestbranding=1" class="w-full h-full" frameborder="0" allowfullscreen></iframe>`;
+            document.getElementById('trailer-container').innerHTML = `
+                <iframe src="${anime.trailer.embed_url}?autoplay=0&controls=1&modestbranding=1"
+                        title="${animeTitle} trailer"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                        allowfullscreen></iframe>`;
         }
 
         const castContainer = document.getElementById('cast-list');
-        castContainer.innerHTML = '';
         const mainCast = castData.data ? castData.data.slice(0, 4) : [];
-        if (mainCast.length === 0) castContainer.innerHTML = `<p class="text-zinc-600 text-sm font-bold">Cast information unavailable.</p>`;
-        
-        mainCast.forEach(c => {
-            const voiceActor = c.voice_actors?.find(va => va.language === 'Japanese');
-            const vaName = voiceActor ? voiceActor.person.name : "Unknown VA";
-            castContainer.innerHTML += `
-                <div class="flex items-center gap-4 bg-[#151518] border border-zinc-800/50 p-2.5 rounded-xl hover:bg-zinc-800 transition">
-                    <img src="${c.character.images?.jpg?.image_url || ''}" class="w-12 h-12 rounded-lg object-cover shadow-md">
-                    <div class="flex-1 overflow-hidden">
-                        <h4 class="text-sm font-bold text-white truncate">${c.character.name}</h4>
-                        <p class="text-[10px] text-zinc-500 font-bold tracking-wide uppercase mt-0.5">VA: ${vaName}</p>
+        if (mainCast.length === 0) {
+            castContainer.innerHTML = `<p class="detail-note">CAST INFORMATION UNAVAILABLE</p>`;
+        } else {
+            castContainer.innerHTML = mainCast.map(c => {
+                const voiceActor = c.voice_actors?.find(va => va.language === 'Japanese');
+                const vaName = voiceActor ? voiceActor.person.name : "Unknown VA";
+                return `
+                    <div class="cast-row">
+                        <img src="${c.character.images?.jpg?.image_url || ''}" alt="" class="cast-avatar" loading="lazy">
+                        <div class="cast-copy">
+                            <h3 class="cast-name">${c.character.name}</h3>
+                            <p class="cast-va">VA · ${vaName}</p>
+                        </div>
                     </div>
-                </div>
-            `;
-        });
+                `;
+            }).join('');
+        }
 
         // 2. PREPARE THE SERVERS
         const encodedTitle = encodeURIComponent(animeTitle);
@@ -83,32 +143,32 @@ document.addEventListener("DOMContentLoaded", async () => {
         const serverGrid = document.getElementById('server-grid');
         serverGrid.innerHTML = '';
 
-        servers.forEach(server => {
+        servers.forEach((server, index) => {
+            let host = '';
+            try { host = new URL(server.url).hostname.replace(/^www\./, ''); } catch (error) { host = 'external'; }
+
             const btn = document.createElement('button');
-            btn.className = "w-full flex items-center justify-between p-6 bg-zinc-900 border border-zinc-800 hover:border-[#5a4fcf] rounded-2xl group transition-all duration-300 hover:shadow-[0_0_20px_rgba(90,79,207,0.2)]";
+            btn.type = 'button';
+            btn.className = 'server-tile';
             btn.innerHTML = `
-                <span class="text-lg font-black text-white uppercase tracking-widest group-hover:text-[#5a4fcf] transition-colors">${server.name}</span>
-                <svg class="w-6 h-6 text-zinc-600 group-hover:text-[#5a4fcf] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                <span class="server-copy">
+                    <span class="server-index">${String(index + 1).padStart(2, '0')} / EXTERNAL</span>
+                    <span class="server-name">${server.name}</span>
+                    <span class="server-host">${host}</span>
+                </span>
+                <span class="server-arrow" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+                </span>
             `;
-            // Open in new tab
-            btn.onclick = () => window.open(server.url, '_blank');
+            btn.onclick = () => window.open(server.url, '_blank', 'noopener');
             serverGrid.appendChild(btn);
         });
 
     } catch (error) {
-        document.getElementById('anime-title').textContent = "Data Fetch Failed";
+        titleEl.textContent = "Title unavailable";
+        descEl.textContent = "The catalog could not load this title just now. It may be a temporary API limit — refresh in a moment.";
+        badgesEl.innerHTML = `<span class="chip">Request failed</span>`;
+        const castContainer = document.getElementById('cast-list');
+        if (castContainer) castContainer.innerHTML = `<p class="detail-note">CAST INFORMATION UNAVAILABLE</p>`;
     }
-
-    // --- MODAL LOGIC ---
-    window.openServerModal = function() {
-        const modal = document.getElementById('server-modal');
-        modal.classList.remove('hidden');
-        setTimeout(() => modal.classList.remove('opacity-0'), 10);
-    };
-
-    window.closeServerModal = function() {
-        const modal = document.getElementById('server-modal');
-        modal.classList.add('opacity-0');
-        setTimeout(() => modal.classList.add('hidden'), 300);
-    };
 });

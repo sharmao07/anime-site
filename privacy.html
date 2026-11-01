@@ -3,92 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy — Anime.TV</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-[#09090b] text-zinc-100 font-sans min-h-screen selection:bg-indigo-500 selection:text-white flex flex-col overflow-x-hidden">
+    <meta name="theme-color" content="#050507">
+    <title>Privacy policy — Anime.TV</title>
+    <meta name="description" content="How Anime.TV handles data: no accounts, on-device watch history, and third-party metadata requests.">
 
-    <header class="w-full bg-[#09090b]/90 backdrop-blur-md border-b border-zinc-900 sticky top-0 z-50 px-6 py-4 shrink-0">
-        <div class="max-w-[1400px] mx-auto flex flex-wrap xl:flex-nowrap items-center justify-between gap-6">
-            <div class="flex items-center gap-10">
-                <span class="text-3xl font-black tracking-tight text-white cursor-pointer" onclick="window.location.href='index.html'">Anime<span class="text-indigo-500">.TV</span></span>
-                <nav class="hidden lg:flex items-center gap-8 text-[13px] font-bold tracking-widest text-zinc-400">
-                    <a href="genres.html" class="nav-link hover:text-white transition uppercase">Genres</a>
-                    <div class="relative group z-50 flex items-center">
-                        <button class="nav-link hover:text-white flex items-center gap-1.5 py-2 transition uppercase">TYPES <span class="text-[10px]">▼</span></button>
-                        <div class="absolute top-full left-0 pt-4 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-2xl p-2 flex flex-col gap-1">
-                                <a href="home.html?type=tv" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">TV Series</a>
-                                <a href="home.html?type=movie" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">Movies</a>
-                            </div>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="ui.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    maxWidth: { shell: '1560px' },
+                    fontFamily: {
+                        sans: ['Manrope', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ['Sora', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="page flex min-h-screen flex-col antialiased">
+    <div class="ambient" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <a href="#policy" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-[var(--btn-bg)] focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold focus:text-[var(--btn-fg)]">Skip to policy</a>
+
+    <header id="site-header">
+        <div class="relative mx-auto w-full max-w-shell">
+            <div class="nav-shell flex items-center gap-3 px-3 py-2.5 md:px-4">
+                <a href="home.html" class="brand py-1" aria-label="Anime.TV home">Anime<span class="dot">.</span><span class="tv">TV</span></a>
+
+                <nav aria-label="Primary" class="ml-2 hidden items-center gap-0.5 lg:flex">
+                    <a href="home.html" class="nav-link">Home</a>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-genres">
+                            Genres
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-genres" class="menu-panel w-56" data-menu>
+                            <a class="menu-item" href="genres.html">All genres <span class="menu-meta">INDEX</span></a>
+                            <a class="menu-item" href="home.html?genre_id=1">Action</a>
+                            <a class="menu-item" href="home.html?genre_id=2">Adventure</a>
+                            <a class="menu-item" href="home.html?genre_id=4">Comedy</a>
+                            <a class="menu-item" href="home.html?genre_id=8">Drama</a>
+                            <a class="menu-item" href="home.html?genre_id=10">Fantasy</a>
+                            <a class="menu-item" href="home.html?genre_id=22">Romance</a>
+                            <a class="menu-item" href="home.html?genre_id=24">Sci-fi</a>
                         </div>
                     </div>
-                    <a href="home.html?view=new" class="nav-link hover:text-white transition uppercase">New Releases</a>
-                    <a href="history.html" class="nav-link hover:text-white transition uppercase">History</a>
-                    <a href="home.html?view=ongoing" class="nav-link hover:text-white transition uppercase">Ongoing</a>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-types">
+                            Types
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-types" class="menu-panel w-52" data-menu>
+                            <a class="menu-item" href="home.html?type=tv">TV series <span class="menu-meta">TV</span></a>
+                            <a class="menu-item" href="home.html?type=movie">Movies <span class="menu-meta">MV</span></a>
+                            <a class="menu-item" href="home.html?type=ova">OVAs <span class="menu-meta">OVA</span></a>
+                            <a class="menu-item" href="home.html?type=special">Specials <span class="menu-meta">SP</span></a>
+                            <a class="menu-item" href="home.html?type=ona">ONAs <span class="menu-meta">ONA</span></a>
+                        </div>
+                    </div>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-alpha">
+                            A-Z
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-alpha" class="menu-panel alpha-panel w-[336px]" data-menu>
+                            <div id="alpha-index" class="grid grid-cols-7 gap-1"></div>
+                        </div>
+                    </div>
+
+                    <a href="history.html" class="nav-link">History</a>
                 </nav>
-            </div>
-            <div class="flex w-full xl:w-auto items-center justify-end">
-                <div class="flex items-center bg-[#151518] border border-zinc-800 hover:border-zinc-700 transition rounded-full px-4 py-2 w-full sm:w-[400px] shadow-lg focus-within:ring-2 focus-within:ring-indigo-500/50">
-                    <button class="text-white pr-3 hover:text-indigo-400 transition" onclick="window.location.href='home.html?q=' + document.getElementById('search-input').value">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+
+                <form action="home.html" method="GET" role="search" class="search-shell ml-auto hidden md:flex md:w-[240px] lg:w-[300px]">
+                    <button id="search-btn" type="submit" class="icon-btn" aria-label="Search anime" style="width:32px;height:32px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
                     </button>
-                    <input type="text" id="search-input" placeholder="Search anime" class="flex-1 bg-transparent text-sm text-white focus:outline-none placeholder-zinc-500 w-full font-medium tracking-wide">
+                    <label for="search-input" class="sr-only">Search anime</label>
+                    <input id="search-input" name="q" type="text" placeholder="Search anime" autocomplete="off" spellcheck="false">
+                </form>
+
+                <div class="ml-auto flex items-center gap-1.5 md:ml-0">
+                    <button id="theme-toggle" type="button" class="icon-btn theme-btn" title="Toggle theme" aria-label="Toggle theme">
+                        <span id="theme-icon" aria-hidden="true"></span>
+                    </button>
+                    <button id="mobile-menu-btn" type="button" class="icon-btn border border-[var(--line)] lg:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+                        <svg class="menu-open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                        <svg class="menu-close-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    </button>
                 </div>
+            </div>
+
+            <div id="mobile-menu" class="mobile-menu lg:hidden" aria-hidden="true">
+                <form action="home.html" method="GET" role="search" class="mb-2 flex items-center gap-2 border-b border-[var(--line)] p-1 pb-3">
+                    <label for="mobile-q" class="sr-only">Search anime</label>
+                    <input id="mobile-q" name="q" type="text" placeholder="Search anime" class="field" style="height:40px;">
+                    <button type="submit" class="btn-accent" style="height:40px;flex:none;">Search</button>
+                </form>
+                <nav class="flex flex-col" aria-label="Mobile">
+                    <a href="home.html" class="mobile-link">Home <span class="ordinal">01</span></a>
+                    <a href="genres.html" class="mobile-link">Genres <span class="ordinal">02</span></a>
+                    <a href="home.html?type=tv" class="mobile-link">TV series <span class="ordinal">03</span></a>
+                    <a href="home.html?view=new" class="mobile-link">New releases <span class="ordinal">04</span></a>
+                    <a href="history.html" class="mobile-link">History <span class="ordinal">05</span></a>
+                    <a href="terms.html" class="mobile-link">Terms <span class="ordinal">06</span></a>
+                </nav>
             </div>
         </div>
     </header>
 
-    <main class="max-w-[1000px] mx-auto px-6 py-16 flex-1 w-full text-zinc-300">
-        <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">Privacy Policy</h1>
-        <p class="text-sm text-zinc-500 mb-10">Last updated: May 2026</p>
+    <main class="page-main pb-20">
+        <div class="wrap pt-10 md:pt-14">
+            <div class="max-w-3xl">
+                <p class="eyebrow">Legal / Privacy</p>
+                <h1 class="doc-title mt-5">Privacy policy<span class="text-[var(--accent)]">.</span></h1>
+                <p class="mt-5 max-w-2xl text-[14px] leading-[1.75] text-[var(--text-2)]">
+                    Anime.TV is built to be read, watched and left alone. There is no account, no feed and no
+                    server-side profile of you. This page explains the small amount of data that does move.
+                </p>
+                <div class="mt-6 flex flex-wrap items-center gap-2">
+                    <span class="chip">Last updated · May 2026</span>
+                    <span class="chip">4 sections</span>
+                    <span class="chip">No account required</span>
+                </div>
+            </div>
 
-        <div class="space-y-8 leading-relaxed">
-            <section>
-                <h2 class="text-xl font-bold text-white mb-3">1. Information We Collect</h2>
-                <p>We believe in keeping your browsing experience as private as possible. <strong>Anime.TV does not require you to create an account, and we do not store your personal information on our servers.</strong></p>
-            </section>
+            <div class="doc-summary mt-10">
+                <div>
+                    <span class="n">01</span>
+                    <h3>No account, no profile</h3>
+                    <p>Nothing to sign up for and no personal details collected by us.</p>
+                </div>
+                <div>
+                    <span class="n">02</span>
+                    <h3>History stays local</h3>
+                    <p>Your watch log lives in this browser's local storage, not on a server.</p>
+                </div>
+                <div>
+                    <span class="n">03</span>
+                    <h3>Third-party calls</h3>
+                    <p>Metadata, images and form posts are handled by Jikan, TMDB and Formspree.</p>
+                </div>
+            </div>
+        </div>
 
-            <section>
-                <h2 class="text-xl font-bold text-white mb-3">2. Local Storage (Your History)</h2>
-                <p>To provide features like "Continue Watching" and your "Watch History", we utilize your browser's Local Storage. This means your viewing history is saved directly on your own device, not on our servers. Clearing your browser data will erase this history.</p>
-            </section>
+        <div class="wrap mt-12 md:mt-16">
+            <div class="legal-layout">
+                <aside class="legal-toc" aria-label="On this page">
+                    <p class="legal-toc-title">ON THIS PAGE</p>
+                    <a href="#collect">01 · Information we collect</a>
+                    <a href="#storage">02 · Local storage</a>
+                    <a href="#third-parties">03 · Third-party services</a>
+                    <a href="#changes">04 · Changes to this policy</a>
+                    <a href="#policy" class="mt-3 text-[var(--text-2)]">Back to top ↑</a>
+                </aside>
 
-            <section>
-                <h2 class="text-xl font-bold text-white mb-3">3. Third-Party Services</h2>
-                <p>We use third-party APIs (such as Jikan/MyAnimeList and TMDB) to fetch anime metadata, descriptions, and cover art. We also use third-party form providers (like Formspree) to handle our "Report a Bug" feature. When interacting with these features, basic network data (like IP addresses) may be visible to these third parties in accordance with their own privacy policies.</p>
-            </section>
+                <article id="policy" class="legal-prose">
+                    <section id="collect">
+                        <span class="clause">01 / Collection</span>
+                        <h2>Information we collect</h2>
+                        <p>
+                            We believe in keeping your browsing experience as private as possible.
+                            <strong>Anime.TV does not require you to create an account, and we do not store your
+                            personal information on our servers.</strong>
+                        </p>
+                    </section>
 
-            <section>
-                <h2 class="text-xl font-bold text-white mb-3">4. Changes to This Policy</h2>
-                <p>We may update our Privacy Policy from time to time. We advise you to review this page periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.</p>
-            </section>
+                    <section id="storage">
+                        <span class="clause">02 / On this device</span>
+                        <h2>Local storage (your history)</h2>
+                        <p>
+                            To provide features like “Continue Watching” and your “Watch History”, we use your
+                            browser's local storage. Your viewing history is saved directly on your own device,
+                            not on our servers. Clearing your browser data will erase this history.
+                        </p>
+                    </section>
+
+                    <section id="third-parties">
+                        <span class="clause">03 / Outside services</span>
+                        <h2>Third-party services</h2>
+                        <p>
+                            We use third-party APIs (such as Jikan/MyAnimeList and TMDB) to fetch anime metadata,
+                            descriptions and cover art. We also use third-party form providers (such as Formspree)
+                            to handle the “Report a Bug” feature. When interacting with these features, basic
+                            network data (like IP addresses) may be visible to these third parties in accordance
+                            with their own privacy policies.
+                        </p>
+                    </section>
+
+                    <section id="changes">
+                        <span class="clause">04 / Updates</span>
+                        <h2>Changes to this policy</h2>
+                        <p>
+                            We may update our Privacy Policy from time to time. We advise you to review this page
+                            periodically for any changes. Changes to this Privacy Policy are effective when they
+                            are posted on this page.
+                        </p>
+                    </section>
+
+                    <div class="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--line)] pt-6">
+                        <p class="font-mono text-[10px] tracking-[0.04em] text-[var(--text-3)]">Questions about this page?</p>
+                        <button type="button" onclick="openBugModal()" class="section-link">
+                            Send a note
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </button>
+                    </div>
+                </article>
+            </div>
         </div>
     </main>
 
-    <footer class="w-full bg-[#050505] border-t border-zinc-900 pt-16 pb-8 mt-auto">
-        <div class="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between gap-8 md:gap-12">
-            <div class="max-w-xs space-y-4">
-                <span class="text-3xl font-black tracking-tight text-white cursor-pointer" onclick="window.location.href='index.html'">Anime<span class="text-indigo-500">.TV</span></span>
-                <p class="text-xs text-zinc-500 leading-relaxed">Anime.TV does not store any files on our server, we only link to the media which is hosted on 3rd party services.</p>
+    <footer class="site-footer">
+        <div class="wrap py-14 md:py-16">
+            <div class="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-8">
+                <div class="max-w-xs">
+                    <a href="home.html" class="brand" aria-label="Anime.TV home">Anime<span class="dot">.</span><span class="tv">TV</span></a>
+                    <p class="mt-4 text-[12.5px] leading-relaxed text-[var(--text-3)]">
+                        A quieter way to find what to watch next. Anime.TV links to media hosted elsewhere and stores no files.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Navigation</h4>
+                    <a href="home.html" class="footer-link">Home</a>
+                    <a href="genres.html" class="footer-link">Genres</a>
+                    <a href="home.html?type=movie" class="footer-link">Movies</a>
+                    <a href="history.html" class="footer-link">History</a>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Browse</h4>
+                    <a href="home.html?view=new" class="footer-link">New releases</a>
+                    <a href="home.html?view=ongoing" class="footer-link">Ongoing</a>
+                    <a href="home.html?view=upcoming" class="footer-link">Upcoming</a>
+                    <a href="home.html?view=shuffle" class="footer-link">Random title</a>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Support</h4>
+                    <button type="button" onclick="openBugModal()" class="footer-link">Report a bug</button>
+                    <a href="terms.html" class="footer-link">Terms of service</a>
+                    <a href="privacy.html" class="footer-link">Privacy policy</a>
+                </div>
             </div>
-            
-            <div class="flex flex-wrap gap-12 md:gap-24 text-sm">
-                <div class="space-y-3">
-                    <h4 class="font-black text-white tracking-widest uppercase text-xs mb-4">Navigation</h4>
-                    <a href="home.html" class="block text-zinc-400 hover:text-indigo-400 transition">Home</a>
-                    <a href="genres.html" class="block text-zinc-400 hover:text-indigo-400 transition">Genres</a>
-                    <a href="home.html?type=movie" class="block text-zinc-400 hover:text-indigo-400 transition">Movies</a>
-                </div>
-                <div class="space-y-3">
-                    <h4 class="font-black text-white tracking-widest uppercase text-xs mb-4">Support</h4>
-                    <button onclick="alert('Please submit requests from the Home page.')" class="block text-zinc-400 hover:text-[#d76145] transition text-left font-medium">Report Bug / Request</button>
-                    <a href="terms.html" class="block text-zinc-400 hover:text-indigo-400 transition">Terms of Service</a>
-                    <a href="privacy.html" class="block text-zinc-400 hover:text-indigo-400 transition">Privacy Policy</a>
-                </div>
+
+            <div class="mt-12 flex flex-col gap-3 border-t border-[var(--line)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p class="font-mono text-[10.5px] tracking-[0.02em] text-[var(--text-3)]">&copy; 2026 Anime.TV</p>
+                <p class="font-mono text-[10.5px] tracking-[0.02em] text-[var(--text-3)]">Catalog data from Jikan and MyAnimeList</p>
             </div>
         </div>
     </footer>
 
+    <div id="bug-modal" class="fixed inset-0 z-[100] flex hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300" role="dialog" aria-modal="true" aria-labelledby="bug-modal-title">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="closeBugModal()"></div>
+
+        <div id="bug-modal-content" class="dialog relative w-full max-w-lg scale-95 p-6 transition-transform duration-300 md:p-8">
+            <button type="button" onclick="closeBugModal()" class="icon-btn absolute right-4 top-4 border border-[var(--line)] bg-[var(--field-bg)]" aria-label="Close dialog">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+
+            <div class="dialog-icon mb-5" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.6-.7L3 21l1.8-5.1A8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4Z"/></svg>
+            </div>
+
+            <h2 id="bug-modal-title" class="font-display text-[24px] font-semibold tracking-[-0.03em] text-[var(--text)]">Send a request</h2>
+            <p class="mt-2 max-w-sm pr-6 text-[12.5px] leading-relaxed text-[var(--text-3)]">Missing a title, or found something broken? Send the details and it lands with the team.</p>
+
+            <form id="bug-form" action="https://formspree.io/f/mwvznpjo" method="POST" class="mt-6 space-y-2.5">
+                <label for="bug-anime" class="sr-only">Anime name or bug title</label>
+                <input id="bug-anime" type="text" name="anime_name" placeholder="Anime name or bug title" required class="field">
+
+                <label for="bug-link" class="sr-only">Link to MyAnimeList, AniList, AniDB, or another source</label>
+                <input id="bug-link" type="text" name="link" placeholder="Link to MAL, AniList, AniDB (optional)" class="field">
+
+                <label for="bug-details" class="sr-only">More details</label>
+                <textarea id="bug-details" name="details" rows="4" placeholder="Anything else that helps" class="field hide-scroll"></textarea>
+
+                <button type="submit" class="btn-accent mt-2 w-full" style="height:46px;">Send request</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="ui.js"></script>
 </body>
 </html>

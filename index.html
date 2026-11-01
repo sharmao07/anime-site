@@ -3,136 +3,547 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime.TV — Welcome</title>
+    <meta name="theme-color" content="#050507">
+    <title>Anime.TV — Stories worth staying up for</title>
+    <meta name="description" content="Anime.TV is a quiet, fast index of thousands of anime series and films. Search by title, genre, type or status.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="ui.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    maxWidth: { shell: '1560px' },
+                    fontFamily: {
+                        sans: ['Manrope', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ['Sora', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+
     <style>
-        .bg-start {
-            background-image: url('start-bg.jpg'); 
+        .landing {
+            position: relative;
+            isolation: isolate;
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 128px 0 72px;
+            overflow: hidden;
+        }
+        @media (min-width: 768px) {
+            .landing { padding: 150px 0 88px; }
+        }
+
+        .landing-visual {
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 62svh;
+            z-index: -1;
+            background-image: url('start-bg.jpg');
             background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            background-position: center 42%;
+            opacity: 0.16;
+            filter: saturate(0.55) contrast(1.05);
+            -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,0.55) 38%, transparent 82%);
+            mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,0.55) 38%, transparent 82%);
+            pointer-events: none;
+        }
+        body.light-mode .landing-visual {
+            opacity: 0.09;
+            filter: grayscale(0.8) contrast(0.9);
+        }
+
+        .landing-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 48px;
+            align-items: center;
+        }
+        @media (min-width: 1120px) {
+            .landing-grid {
+                grid-template-columns: minmax(0, 1.18fr) minmax(360px, 0.82fr);
+                gap: 72px;
+            }
+        }
+
+        .landing-title {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: clamp(46px, 6.4vw, 92px);
+            font-weight: 600;
+            line-height: 0.95;
+            letter-spacing: -0.055em;
+            color: var(--text);
+            text-wrap: balance;
+        }
+        .landing-title .stop { color: var(--accent); }
+
+        .landing-lede {
+            margin-top: 22px;
+            max-width: 48ch;
+            color: var(--text-2);
+            font-size: 14.5px;
+            line-height: 1.75;
+        }
+
+        .search-console {
+            margin-top: 32px;
+            padding: 8px;
+            border-radius: 18px;
+            background: var(--glass);
+            border: 1px solid var(--line-strong);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            backdrop-filter: blur(20px) saturate(160%);
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 56px;
+            padding: 0 6px 0 12px;
+            border-radius: 12px;
+            background: var(--field-bg);
+            border: 1px solid var(--line);
+            transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+        }
+        .search-row:focus-within {
+            border-color: var(--line-strong);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+        .search-row svg { width: 18px; height: 18px; color: var(--text-3); flex: none; }
+        #search-input {
+            flex: 1 1 auto;
+            min-width: 0;
+            height: 100%;
+            border: 0;
+            background: transparent;
+            color: var(--text);
+            font-size: 14.5px;
+            font-weight: 500;
+            outline: none;
+        }
+        #search-input::placeholder { color: var(--text-3); }
+
+        .search-filter-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+            padding: 8px 4px 4px;
+        }
+        @media (min-width: 640px) {
+            .search-filter-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+        .search-filter-row .field-select {
+            background-color: transparent;
+            border-color: transparent;
+            height: 36px;
+            font-size: 11.5px;
+            color: var(--text-2);
+        }
+        .search-filter-row .field-select:hover { background-color: var(--hover); }
+        .search-filter-row .field-select:focus { background-color: var(--surface); border-color: var(--line-strong); }
+
+        .landing-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .format-panel { overflow: hidden; }
+        .format-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--line);
+        }
+        .format-head h2 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+        .format-row {
+            display: grid;
+            grid-template-columns: 34px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--line);
+            transition: background-color 0.18s var(--ease);
+        }
+        .format-row:last-child { border-bottom: 0; }
+        .format-row:hover { background: var(--hover); }
+        .format-row .n {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 10.5px;
+            color: var(--text-3);
+        }
+        .format-row:hover .n { color: var(--accent-text); }
+        .format-row h3 {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+        .format-row p {
+            margin-top: 3px;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 9.5px;
+            letter-spacing: 0.02em;
+            color: var(--text-3);
+        }
+        .format-row svg {
+            width: 15px;
+            height: 15px;
+            color: var(--text-3);
+            transition: transform 0.2s var(--ease), color 0.2s var(--ease);
+        }
+        .format-row:hover svg { color: var(--accent-text); transform: translateX(3px); }
+
+        .shuffle-card {
+            margin-top: 14px;
+            padding: 18px;
+            border-radius: 18px;
+            border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+            background:
+                radial-gradient(120% 140% at 100% 0%, var(--accent-soft), transparent 58%),
+                var(--panel);
+        }
+        .shuffle-card .icon {
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: var(--accent-text);
+            background: var(--accent-soft);
+        }
+
+        .landing-foot {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 52px;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+        }
+
+        @media (max-width: 767px) {
+            .landing { padding-top: 112px; }
+            .search-row { height: 52px; }
+            .landing-title { font-size: clamp(42px, 11vw, 58px); }
         }
     </style>
 </head>
-<body class="bg-[#0b0b0e] text-white font-sans min-h-screen overflow-x-hidden selection:bg-indigo-500 selection:text-white bg-start">
+<body class="page flex min-h-screen flex-col antialiased">
+    <div class="ambient" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
 
-    <div class="fixed inset-0 z-0 pointer-events-none">
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#0b0b0e]/30 to-[#0b0b0e]/90 opacity-90"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-[#0b0b0e] via-transparent to-[#0b0b0e]/50"></div>
-    </div>
+    <a href="#landing-search" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-[var(--btn-bg)] focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold focus:text-[var(--btn-fg)]">Skip to search</a>
 
-    <header class="relative z-10 w-full pt-8 px-4 flex justify-center">
-        <nav class="hidden lg:flex items-center gap-8 text-[13px] font-bold tracking-widest text-zinc-400">
-            <a href="home.html?view=shuffle" class="hover:text-white transition flex items-center gap-2" title="Random Anime">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-            </a>
-            <a href="genres.html" class="nav-link hover:text-white transition uppercase">GENRES</a>
-            
-            <div class="relative group z-50 flex items-center">
-                <button class="nav-link hover:text-white flex items-center gap-1.5 py-2 transition uppercase">TYPES <span class="text-[10px]">▼</span></button>
-                <div class="absolute top-full left-0 pt-4 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 text-left">
-                    <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-2xl p-2 flex flex-col gap-1">
-                        <a href="home.html?type=tv" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">TV Series</a>
-                        <a href="home.html?type=movie" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">Movies</a>
-                        <a href="home.html?type=ova" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">OVAs</a>
-                        <a href="home.html?type=special" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">Specials</a>
+    <header id="site-header">
+        <div class="relative mx-auto w-full max-w-shell">
+            <div class="nav-shell flex items-center gap-3 px-3 py-2.5 md:px-4">
+                <a href="index.html" class="brand py-1" aria-label="Anime.TV home">Anime<span class="dot">.</span><span class="tv">TV</span></a>
+
+                <nav aria-label="Primary" class="ml-2 hidden items-center gap-0.5 lg:flex">
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-genres">
+                            Genres
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-genres" class="menu-panel w-56" data-menu>
+                            <a class="menu-item" href="genres.html">All genres <span class="menu-meta">INDEX</span></a>
+                            <a class="menu-item" href="home.html?genre_id=1">Action</a>
+                            <a class="menu-item" href="home.html?genre_id=2">Adventure</a>
+                            <a class="menu-item" href="home.html?genre_id=4">Comedy</a>
+                            <a class="menu-item" href="home.html?genre_id=8">Drama</a>
+                            <a class="menu-item" href="home.html?genre_id=10">Fantasy</a>
+                            <a class="menu-item" href="home.html?genre_id=22">Romance</a>
+                            <a class="menu-item" href="home.html?genre_id=24">Sci-fi</a>
+                        </div>
                     </div>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-types">
+                            Types
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-types" class="menu-panel w-52" data-menu>
+                            <a class="menu-item" href="home.html?type=tv">TV series <span class="menu-meta">TV</span></a>
+                            <a class="menu-item" href="home.html?type=movie">Movies <span class="menu-meta">MV</span></a>
+                            <a class="menu-item" href="home.html?type=ova">OVAs <span class="menu-meta">OVA</span></a>
+                            <a class="menu-item" href="home.html?type=special">Specials <span class="menu-meta">SP</span></a>
+                            <a class="menu-item" href="home.html?type=ona">ONAs <span class="menu-meta">ONA</span></a>
+                        </div>
+                    </div>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-alpha">
+                            A-Z
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-alpha" class="menu-panel alpha-panel w-[336px]" data-menu>
+                            <div id="alpha-index" class="grid grid-cols-7 gap-1"></div>
+                        </div>
+                    </div>
+
+                    <a href="history.html" class="nav-link">History</a>
+                </nav>
+
+                <div class="ml-auto flex items-center gap-1.5">
+                    <a href="home.html" class="btn-primary hidden sm:inline-flex" style="height:38px;padding:0 16px;font-size:12px;">Browse library</a>
+                    <button id="theme-toggle" type="button" class="icon-btn theme-btn" title="Toggle theme" aria-label="Toggle theme">
+                        <span id="theme-icon" aria-hidden="true"></span>
+                    </button>
+                    <button id="mobile-menu-btn" type="button" class="icon-btn border border-[var(--line)] lg:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+                        <svg class="menu-open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                        <svg class="menu-close-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    </button>
                 </div>
             </div>
 
-            <a href="home.html?view=new" class="nav-link hover:text-white transition uppercase">NEW RELEASES</a>
-            <a href="history.html" class="nav-link hover:text-white transition uppercase">HISTORY</a>
-            <a href="home.html?view=ongoing" class="nav-link hover:text-white transition uppercase">ONGOING</a>
-            
-            <div class="relative group z-50 flex items-center">
-                <button class="nav-link hover:text-white flex items-center gap-1.5 py-2 transition uppercase">A-Z List <span class="text-[10px]">▼</span></button>
-                <div class="absolute top-full left-0 pt-4 w-80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 text-left">
-                    <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-2xl p-4">
-                        <div id="alpha-index" class="flex flex-wrap gap-1.5"></div>
-                    </div>
+            <div id="mobile-menu" class="mobile-menu lg:hidden" aria-hidden="true">
+                <nav class="flex flex-col" aria-label="Mobile">
+                    <a href="home.html" class="mobile-link">Browse library <span class="ordinal">01</span></a>
+                    <a href="genres.html" class="mobile-link">Genres <span class="ordinal">02</span></a>
+                    <a href="home.html?type=tv" class="mobile-link">TV series <span class="ordinal">03</span></a>
+                    <a href="home.html?view=new" class="mobile-link">New releases <span class="ordinal">04</span></a>
+                    <a href="home.html?view=upcoming" class="mobile-link">Upcoming <span class="ordinal">05</span></a>
+                    <a href="history.html" class="mobile-link">History <span class="ordinal">06</span></a>
+                </nav>
+                <div class="mt-1 border-t border-[var(--line)] pt-1">
+                    <button type="button" onclick="openBugModal()" class="mobile-link w-full text-left">Report a bug <span class="ordinal">07</span></button>
                 </div>
             </div>
-        </nav>
+        </div>
     </header>
 
-    <main class="relative z-10 flex flex-col items-center justify-center min-h-[80vh] px-4 py-12 text-center">
-        
-        <h1 class="text-6xl md:text-7xl font-black tracking-tight mb-8 drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)] hover:scale-105 transition duration-500 cursor-pointer" onclick="window.location.reload();">
-            Anime<span class="text-indigo-500">.TV</span>
-        </h1>
+    <main class="landing flex-1">
+        <div class="landing-visual" aria-hidden="true"></div>
 
-        <form action="home.html" method="GET" class="flex items-center bg-[#151518] border border-zinc-800 hover:border-zinc-700 transition rounded-full px-5 py-3 w-full max-w-2xl mb-8 shadow-2xl focus-within:ring-2 focus-within:ring-indigo-500/50">
-            <button type="submit" class="text-white pr-4 hover:text-indigo-400 transition">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </button>
-            <input type="text" name="q" placeholder="Search anime" required class="flex-1 bg-transparent text-lg text-white font-medium focus:outline-none placeholder-zinc-500 w-full tracking-wide">
-            
-            <div class="relative group z-50 flex items-center pl-4 border-l border-zinc-700 ml-2 h-8">
-                <button type="button" class="flex items-center gap-2 text-white font-bold text-sm tracking-wide hover:text-indigo-400 transition uppercase">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 4a1 1 0 011-1h16a1 1 0 01.74 1.673l-7.116 8.041A2 2 0 0013 14.228V20a1 1 0 01-1.447.894l-4-2A1 1 0 017 18v-3.772a2 2 0 00-.624-1.486L3.26 5.673A1 1 0 013 4z"/></svg>
-                    FILTER
-                </button>
-                <div class="absolute top-full right-0 pt-6 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 text-left">
-                    <div class="bg-[#151518] border border-zinc-800 rounded-xl shadow-2xl p-4 flex flex-col gap-3 cursor-default" onclick="event.stopPropagation();">
-                        <p class="text-xs font-black text-zinc-500 uppercase tracking-widest border-b border-zinc-800 pb-2">Advanced Filters</p>
-                        <select name="type" class="w-full bg-zinc-900 border border-zinc-800 text-xs font-bold rounded-lg px-3 py-2.5 text-zinc-300 focus:outline-none cursor-pointer">
-                            <option value="">Any Type</option><option value="tv">TV</option><option value="movie">Movie</option><option value="ova">OVA</option>
-                        </select>
-                        <select name="genres" class="w-full bg-zinc-900 border border-zinc-800 text-xs font-bold rounded-lg px-3 py-2.5 text-zinc-300 focus:outline-none cursor-pointer">
-                            <option value="">Any Genre</option><option value="1">Action</option><option value="2">Adventure</option><option value="4">Comedy</option><option value="8">Drama</option><option value="10">Fantasy</option><option value="22">Romance</option><option value="24">Sci-Fi</option>
-                        </select>
-                        <select name="status" class="w-full bg-zinc-900 border border-zinc-800 text-xs font-bold rounded-lg px-3 py-2.5 text-zinc-300 focus:outline-none cursor-pointer">
-                            <option value="">Any Status</option><option value="airing">Airing</option><option value="complete">Complete</option><option value="upcoming">Upcoming</option>
-                        </select>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 text-xs font-bold rounded-lg transition mt-2 text-center">
-                            Search with Filters
-                        </button>
+        <div class="wrap">
+            <div class="landing-grid">
+                <div class="landing-copy">
+                    <p class="eyebrow">Anime.TV · Index 2026</p>
+
+                    <h1 class="landing-title mt-5">Stories worth<br>staying up for<span class="stop">.</span></h1>
+
+                    <p class="landing-lede">
+                        A quiet, fast index of thousands of series and films. No account, no noise —
+                        just the title you were looking for, and the one after it.
+                    </p>
+
+                    <form id="landing-search" action="home.html" method="GET" class="search-console" role="search">
+                        <div class="search-row">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+                            <label for="search-input" class="sr-only">Search anime</label>
+                            <input id="search-input" type="text" name="q" placeholder="Search titles — Frieren, Vinland Saga, Paprika…" required autocomplete="off" spellcheck="false">
+                            <button id="search-btn" type="submit" class="btn-accent" style="height:42px;padding:0 20px;">Search</button>
+                        </div>
+
+                        <div class="search-filter-row">
+                            <label class="sr-only" for="landing-type">Type</label>
+                            <select id="landing-type" name="type" class="field-select">
+                                <option value="">Any type</option>
+                                <option value="tv">TV series</option>
+                                <option value="movie">Movie</option>
+                                <option value="ova">OVA</option>
+                                <option value="special">Special</option>
+                            </select>
+
+                            <label class="sr-only" for="landing-genre">Genre</label>
+                            <select id="landing-genre" name="genres" class="field-select">
+                                <option value="">Any genre</option>
+                                <option value="1">Action</option>
+                                <option value="2">Adventure</option>
+                                <option value="4">Comedy</option>
+                                <option value="8">Drama</option>
+                                <option value="10">Fantasy</option>
+                                <option value="22">Romance</option>
+                                <option value="24">Sci-fi</option>
+                            </select>
+
+                            <label class="sr-only" for="landing-status">Status</label>
+                            <select id="landing-status" name="status" class="field-select">
+                                <option value="">Any status</option>
+                                <option value="airing">Airing</option>
+                                <option value="complete">Complete</option>
+                                <option value="upcoming">Upcoming</option>
+                            </select>
+                        </div>
+                    </form>
+
+                    <div class="landing-actions">
+                        <a href="home.html" class="btn-primary">
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.4v13.2L19 12z"/></svg>
+                            Browse trending
+                        </a>
+                        <a href="home.html?view=shuffle" class="btn-ghost">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M16 3h5v5M21 3l-7.5 7.5M8 21H3v-5M3 21l7.5-7.5M21 16v5h-5M14 14l7 7M3 3l7 7"/></svg>
+                            Surprise me
+                        </a>
                     </div>
                 </div>
+
+                <aside class="landing-aside" aria-label="Browse by format">
+                    <div class="surface-panel format-panel">
+                        <div class="format-head">
+                            <h2>Browse by format</h2>
+                            <span class="ordinal">04 WAYS IN</span>
+                        </div>
+
+                        <a href="home.html?type=tv" class="format-row">
+                            <span class="n">01</span>
+                            <span>
+                                <h3>TV series</h3>
+                                <p>Episodic · ongoing &amp; complete</p>
+                            </span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </a>
+
+                        <a href="home.html?type=movie" class="format-row">
+                            <span class="n">02</span>
+                            <span>
+                                <h3>Films</h3>
+                                <p>Feature length · one sitting</p>
+                            </span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </a>
+
+                        <a href="home.html?type=ova" class="format-row">
+                            <span class="n">03</span>
+                            <span>
+                                <h3>OVAs</h3>
+                                <p>Limited runs · side stories</p>
+                            </span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </a>
+
+                        <a href="home.html?type=special" class="format-row">
+                            <span class="n">04</span>
+                            <span>
+                                <h3>Specials</h3>
+                                <p>One-offs · pilots &amp; extras</p>
+                            </span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </a>
+                    </div>
+
+                    <div class="shuffle-card">
+                        <div class="flex items-start gap-3">
+                            <span class="icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M16 3h5v5M21 3l-7.5 7.5M8 21H3v-5M3 21l7.5-7.5M21 16v5h-5M14 14l7 7M3 3l7 7"/></svg>
+                            </span>
+                            <div class="min-w-0">
+                                <p class="text-[12.5px] font-semibold text-[var(--text)]">Not sure where to start?</p>
+                                <p class="mt-1 text-[11.5px] leading-relaxed text-[var(--text-3)]">Pull a random title from the catalog and commit to it.</p>
+                                <a href="home.html?view=shuffle" class="section-link mt-2.5">Let the catalog decide
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
             </div>
-        </form>
 
-        <p class="text-zinc-200 font-medium text-sm md:text-base max-w-xl leading-relaxed mb-10 drop-shadow-[0_2px_5px_rgba(0,0,0,0.7)]">
-            Stream the latest episodes of One Piece, Jujutsu Kaisen, Attack on Titan, Bleach, Demon Slayer, and thousands more.
-        </p>
-
-        <a href="home.html" class="bg-[#F05A3F] hover:bg-[#ff694c] text-white font-black tracking-wide uppercase text-sm px-14 py-4 rounded-lg shadow-[0_0_20px_rgba(240,90,63,0.4)] hover:shadow-[0_0_30px_rgba(240,90,63,0.6)] hover:-translate-y-1 transition duration-300 z-20">
-            Watch Now
-        </a>
+            <div class="landing-foot">
+                <p class="font-mono text-[10px] tracking-[0.04em] text-[var(--text-3)]">Metadata via Jikan · MyAnimeList</p>
+                <p class="font-mono text-[10px] tracking-[0.04em] text-[var(--text-3)]">No files hosted · links only</p>
+            </div>
+        </div>
     </main>
 
-    <footer class="w-full bg-[#050505]/80 backdrop-blur-md border-t border-zinc-900/50 pt-8 pb-8 mt-auto relative z-10">
-        <div class="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-            <p>&copy; 2026 Anime.TV. All rights reserved.</p>
-            <div class="flex gap-6">
-                <button onclick="openBugModal()" class="hover:text-[#d76145] transition">Report Bug</button>
-                <a href="terms.html" class="hover:text-white transition">Terms of Service</a>
-                <a href="privacy.html" class="hover:text-white transition">Privacy Policy</a>
+    <footer class="site-footer">
+        <div class="wrap py-14 md:py-16">
+            <div class="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-8">
+                <div class="max-w-xs">
+                    <a href="index.html" class="brand" aria-label="Anime.TV home">Anime<span class="dot">.</span><span class="tv">TV</span></a>
+                    <p class="mt-4 text-[12.5px] leading-relaxed text-[var(--text-3)]">
+                        A quieter way to find what to watch next. Anime.TV links to media hosted elsewhere and stores no files.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Navigation</h4>
+                    <a href="home.html" class="footer-link">Home</a>
+                    <a href="genres.html" class="footer-link">Genres</a>
+                    <a href="home.html?type=movie" class="footer-link">Movies</a>
+                    <a href="history.html" class="footer-link">History</a>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Browse</h4>
+                    <a href="home.html?view=new" class="footer-link">New releases</a>
+                    <a href="home.html?view=ongoing" class="footer-link">Ongoing</a>
+                    <a href="home.html?view=upcoming" class="footer-link">Upcoming</a>
+                    <a href="home.html?view=shuffle" class="footer-link">Random title</a>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Support</h4>
+                    <button type="button" onclick="openBugModal()" class="footer-link">Report a bug</button>
+                    <a href="terms.html" class="footer-link">Terms of service</a>
+                    <a href="privacy.html" class="footer-link">Privacy policy</a>
+                </div>
+            </div>
+
+            <div class="mt-12 flex flex-col gap-3 border-t border-[var(--line)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p class="font-mono text-[10.5px] tracking-[0.02em] text-[var(--text-3)]">&copy; 2026 Anime.TV</p>
+                <p class="font-mono text-[10.5px] tracking-[0.02em] text-[var(--text-3)]">Catalog data from Jikan and MyAnimeList</p>
             </div>
         </div>
     </footer>
 
-    <div id="bug-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeBugModal()"></div>
-        <div class="relative bg-[#1c1d22] w-[90%] max-w-lg rounded-2xl p-6 md:p-8 shadow-2xl border border-zinc-800 transform scale-95 transition-transform duration-300" id="bug-modal-content">
-            <button onclick="closeBugModal()" class="absolute top-5 right-5 text-zinc-500 hover:text-white transition bg-zinc-800/50 hover:bg-zinc-700 p-2 rounded-full">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <div id="bug-modal" class="fixed inset-0 z-[100] flex hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300" role="dialog" aria-modal="true" aria-labelledby="bug-modal-title">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="closeBugModal()"></div>
+
+        <div id="bug-modal-content" class="dialog relative w-full max-w-lg scale-95 p-6 transition-transform duration-300 md:p-8">
+            <button type="button" onclick="closeBugModal()" class="icon-btn absolute right-4 top-4 border border-[var(--line)] bg-[var(--field-bg)]" aria-label="Close dialog">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
             </button>
-            <h2 class="text-2xl font-bold text-white mb-2 tracking-tight">Send Request</h2>
-            <p class="text-sm text-zinc-400 mb-6 leading-relaxed pr-6">If you can't find your favourite anime in our library, please submit a request.</p>
-            
-            <form id="bug-form" action="https://formspree.io/f/mwvznpjo" method="POST" class="space-y-4">
-                <input type="text" name="anime_name" placeholder="Anime name or Bug title" required class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition shadow-inner">
-                <input type="text" name="link" placeholder="Link to MAL/ AL/ anidb or any if possible" class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition shadow-inner">
-                <textarea name="details" placeholder="More details about it if possible" rows="4" class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition resize-none hide-scroll shadow-inner"></textarea>
-                <button type="submit" class="w-full bg-[#d76145] hover:bg-[#eb6a4b] text-white font-bold py-3.5 rounded-xl transition duration-300 mt-4 shadow-[0_4px_15px_rgba(215,97,69,0.3)]">
-                    Send Request
-                </button>
+
+            <div class="dialog-icon mb-5" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.6-.7L3 21l1.8-5.1A8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4Z"/></svg>
+            </div>
+
+            <h2 id="bug-modal-title" class="font-display text-[24px] font-semibold tracking-[-0.03em] text-[var(--text)]">Send a request</h2>
+            <p class="mt-2 max-w-sm pr-6 text-[12.5px] leading-relaxed text-[var(--text-3)]">Missing a title, or found something broken? Send the details and it lands with the team.</p>
+
+            <form id="bug-form" action="https://formspree.io/f/mwvznpjo" method="POST" class="mt-6 space-y-2.5">
+                <label for="bug-anime" class="sr-only">Anime name or bug title</label>
+                <input id="bug-anime" type="text" name="anime_name" placeholder="Anime name or bug title" required class="field">
+
+                <label for="bug-link" class="sr-only">Link to MyAnimeList, AniList, AniDB, or another source</label>
+                <input id="bug-link" type="text" name="link" placeholder="Link to MAL, AniList, AniDB (optional)" class="field">
+
+                <label for="bug-details" class="sr-only">More details</label>
+                <textarea id="bug-details" name="details" rows="4" placeholder="Anything else that helps" class="field hide-scroll"></textarea>
+
+                <button type="submit" class="btn-accent mt-2 w-full" style="height:46px;">Send request</button>
             </form>
         </div>
     </div>
 
     <script src="script.js"></script>
+    <script src="ui.js"></script>
 </body>
 </html>

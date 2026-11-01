@@ -3,152 +3,495 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime.TV — Watch History</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-[#09090b] text-zinc-100 font-sans min-h-screen selection:bg-indigo-500 selection:text-white flex flex-col overflow-x-hidden">
+    <meta name="theme-color" content="#050507">
+    <title>Watch history — Anime.TV</title>
+    <meta name="description" content="Pick up where you left off. Your Anime.TV history is stored on this device only.">
 
-    <header class="w-full bg-[#09090b]/90 backdrop-blur-md border-b border-zinc-900 sticky top-0 z-50 px-6 py-4 shrink-0">
-        <div class="max-w-[1400px] mx-auto flex flex-wrap xl:flex-nowrap items-center justify-between gap-6">
-            <div class="flex items-center gap-10">
-                <span class="text-3xl font-black tracking-tight text-white cursor-pointer" onclick="window.location.href='index.html'">Anime<span class="text-indigo-500">.TV</span></span>
-                <nav class="hidden lg:flex items-center gap-8 text-[13px] font-bold tracking-widest text-zinc-400">
-                    <a href="genres.html" class="nav-link hover:text-white transition uppercase">Genres</a>
-                    <div class="relative group z-50 flex items-center">
-                        <button class="nav-link hover:text-white flex items-center gap-1.5 py-2 transition uppercase">TYPES <span class="text-[10px]">▼</span></button>
-                        <div class="absolute top-full left-0 pt-4 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-2xl p-2 flex flex-col gap-1">
-                                <a href="home.html?type=tv" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">TV Series</a>
-                                <a href="home.html?type=movie" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">Movies</a>
-                                <a href="home.html?type=ova" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">OVAs</a>
-                                <a href="home.html?type=special" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">Specials</a>
-                            </div>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="ui.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    maxWidth: { shell: '1560px' },
+                    fontFamily: {
+                        sans: ['Manrope', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ['Sora', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        .history-hero {
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--line);
+            background: var(--bg-elev);
+            isolation: isolate;
+        }
+        .history-hero-bg {
+            position: absolute;
+            inset: -10% 0 0;
+            z-index: -2;
+            background-position: center 28%;
+            background-size: cover;
+            opacity: 0.34;
+            filter: saturate(0.6) contrast(1.05);
+            transform: scale(1.02);
+        }
+        .history-hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background:
+                linear-gradient(90deg, var(--bg-elev) 0%, color-mix(in srgb, var(--bg-elev) 82%, transparent) 44%, color-mix(in srgb, var(--bg-elev) 46%, transparent) 100%),
+                linear-gradient(to top, var(--bg) 0%, color-mix(in srgb, var(--bg) 22%, transparent) 55%, transparent 100%);
+        }
+        body.light-mode .history-hero-bg { opacity: 0.16; filter: grayscale(0.7) contrast(0.9); }
+
+        .history-hero-inner {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 28px;
+            min-height: 340px;
+            padding-block: 92px 44px;
+        }
+        @media (min-width: 768px) {
+            .history-hero-inner {
+                flex-direction: row;
+                align-items: flex-end;
+                justify-content: space-between;
+                min-height: 390px;
+                padding-block: 120px 52px;
+            }
+        }
+
+        .history-title {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: clamp(40px, 6vw, 76px);
+            font-weight: 600;
+            letter-spacing: -0.05em;
+            line-height: 0.98;
+            color: var(--text);
+            text-wrap: balance;
+        }
+
+        .history-stat {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            flex: none;
+        }
+        .history-stat strong {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: clamp(42px, 5vw, 62px);
+            font-weight: 500;
+            line-height: 0.85;
+            letter-spacing: -0.05em;
+            color: var(--text);
+            font-variant-numeric: tabular-nums;
+        }
+        .history-stat span {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 10px;
+            letter-spacing: 0.05em;
+            color: var(--text-3);
+            padding-bottom: 4px;
+        }
+
+        .history-card {
+            position: relative;
+            display: block;
+            aspect-ratio: 2 / 3;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            background: var(--surface-2);
+            transition: transform 0.32s var(--ease), border-color 0.32s var(--ease), box-shadow 0.32s var(--ease);
+        }
+        .history-card:hover,
+        .history-card:focus-visible {
+            transform: translateY(-4px);
+            border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+            box-shadow: 0 20px 42px -26px rgba(0, 0, 0, 0.95), 0 0 30px -20px var(--accent);
+        }
+        .history-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.65s var(--ease), filter 0.4s var(--ease);
+        }
+        .history-card:hover img { transform: scale(1.045); filter: brightness(0.8); }
+
+        .history-shade {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(4, 4, 7, 0.95) 0%, rgba(4, 4, 7, 0.4) 34%, transparent 64%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 13px;
+        }
+        .history-index {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: inline-flex;
+            align-items: center;
+            height: 20px;
+            padding: 0 6px;
+            border-radius: 5px;
+            background: rgba(5, 5, 7, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 8.5px;
+            letter-spacing: 0.03em;
+            color: rgba(255, 255, 255, 0.74);
+        }
+        .history-card h3 {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+            color: #fff;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .history-resume {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 7px;
+            color: var(--accent-text);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 9px;
+            letter-spacing: 0.03em;
+            opacity: 1;
+            transition: opacity 0.25s var(--ease);
+        }
+        .history-resume svg { width: 9px; height: 9px; }
+        @media (min-width: 768px) {
+            .history-shade { padding-bottom: 12px; }
+            .history-resume { opacity: 0; transform: translateY(4px); transition: opacity 0.25s var(--ease), transform 0.25s var(--ease); }
+            .history-card:hover .history-resume,
+            .history-card:focus-visible .history-resume { opacity: 1; transform: translateY(0); }
+        }
+
+        .history-clear {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            height: 32px;
+            padding: 0 11px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            color: var(--text-3);
+            font-size: 11px;
+            font-weight: 600;
+            transition: color 0.18s var(--ease), border-color 0.18s var(--ease), background-color 0.18s var(--ease);
+        }
+        .history-clear:hover {
+            color: var(--accent-text);
+            border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+            background: var(--accent-soft);
+        }
+        .history-clear:disabled { opacity: 0.4; pointer-events: none; }
+        .history-clear svg { width: 13px; height: 13px; }
+
+        #history-grid > .empty-wrap { grid-column: 1 / -1; }
+    </style>
+</head>
+<body class="page flex min-h-screen flex-col antialiased">
+    <div class="ambient" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <a href="#history-grid" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-[var(--btn-bg)] focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold focus:text-[var(--btn-fg)]">Skip to history</a>
+
+    <header id="site-header">
+        <div class="relative mx-auto w-full max-w-shell">
+            <div class="nav-shell flex items-center gap-3 px-3 py-2.5 md:px-4">
+                <a href="home.html" class="brand py-1" aria-label="Anime.TV home">Anime<span class="dot">.</span><span class="tv">TV</span></a>
+
+                <nav aria-label="Primary" class="ml-2 hidden items-center gap-0.5 lg:flex">
+                    <a href="home.html" class="nav-link">Home</a>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-genres">
+                            Genres
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-genres" class="menu-panel w-56" data-menu>
+                            <a class="menu-item" href="genres.html">All genres <span class="menu-meta">INDEX</span></a>
+                            <a class="menu-item" href="home.html?genre_id=1">Action</a>
+                            <a class="menu-item" href="home.html?genre_id=2">Adventure</a>
+                            <a class="menu-item" href="home.html?genre_id=4">Comedy</a>
+                            <a class="menu-item" href="home.html?genre_id=8">Drama</a>
+                            <a class="menu-item" href="home.html?genre_id=10">Fantasy</a>
+                            <a class="menu-item" href="home.html?genre_id=22">Romance</a>
+                            <a class="menu-item" href="home.html?genre_id=24">Sci-fi</a>
                         </div>
                     </div>
-                    <a href="home.html?view=new" class="nav-link hover:text-white transition uppercase">New Releases</a>
-                    <a href="history.html" class="nav-link hover:text-white transition uppercase">History</a>
-                    <a href="home.html?view=ongoing" class="nav-link hover:text-white transition uppercase">Ongoing</a>
-                    <div class="relative group z-50 flex items-center">
-                        <button class="nav-link hover:text-white flex items-center gap-1.5 py-2 transition uppercase">A-Z List <span class="text-[10px]">▼</span></button>
-                        <div class="absolute top-full left-0 pt-4 w-80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-2xl p-4">
-                                <div id="alpha-index" class="flex flex-wrap gap-1.5"></div>
-                            </div>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-types">
+                            Types
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-types" class="menu-panel w-52" data-menu>
+                            <a class="menu-item" href="home.html?type=tv">TV series <span class="menu-meta">TV</span></a>
+                            <a class="menu-item" href="home.html?type=movie">Movies <span class="menu-meta">MV</span></a>
+                            <a class="menu-item" href="home.html?type=ova">OVAs <span class="menu-meta">OVA</span></a>
+                            <a class="menu-item" href="home.html?type=special">Specials <span class="menu-meta">SP</span></a>
+                            <a class="menu-item" href="home.html?type=ona">ONAs <span class="menu-meta">ONA</span></a>
                         </div>
                     </div>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-alpha">
+                            A-Z
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-alpha" class="menu-panel alpha-panel w-[336px]" data-menu>
+                            <div id="alpha-index" class="grid grid-cols-7 gap-1"></div>
+                        </div>
+                    </div>
+
+                    <a href="history.html" class="nav-link">History</a>
                 </nav>
-            </div>
-            
-            <div class="flex w-full xl:w-auto items-center justify-end">
-                <div class="flex items-center bg-[#151518] border border-zinc-800 hover:border-zinc-700 transition rounded-full px-4 py-2 w-full sm:w-[400px] shadow-lg focus-within:ring-2 focus-within:ring-indigo-500/50">
-                    <button id="search-btn" class="text-white pr-3 hover:text-indigo-400 transition" onclick="window.location.href='home.html?q=' + document.getElementById('search-input').value">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+
+                <form action="home.html" method="GET" role="search" class="search-shell ml-auto hidden md:flex md:w-[240px] lg:w-[300px]">
+                    <button id="search-btn" type="submit" class="icon-btn" aria-label="Search anime" style="width:32px;height:32px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
                     </button>
-                    <input type="text" id="search-input" placeholder="Search anime" class="flex-1 bg-transparent text-sm text-white focus:outline-none placeholder-zinc-500 w-full font-medium tracking-wide">
+                    <label for="search-input" class="sr-only">Search anime</label>
+                    <input id="search-input" name="q" type="text" placeholder="Search anime" autocomplete="off" spellcheck="false">
+                </form>
+
+                <div class="ml-auto flex items-center gap-1.5 md:ml-0">
+                    <button id="theme-toggle" type="button" class="icon-btn theme-btn" title="Toggle theme" aria-label="Toggle theme">
+                        <span id="theme-icon" aria-hidden="true"></span>
+                    </button>
+                    <button id="mobile-menu-btn" type="button" class="icon-btn border border-[var(--line)] lg:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+                        <svg class="menu-open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                        <svg class="menu-close-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    </button>
                 </div>
+            </div>
+
+            <div id="mobile-menu" class="mobile-menu lg:hidden" aria-hidden="true">
+                <form action="home.html" method="GET" role="search" class="mb-2 flex items-center gap-2 border-b border-[var(--line)] p-1 pb-3">
+                    <label for="mobile-q" class="sr-only">Search anime</label>
+                    <input id="mobile-q" name="q" type="text" placeholder="Search anime" class="field" style="height:40px;">
+                    <button type="submit" class="btn-accent" style="height:40px;flex:none;">Search</button>
+                </form>
+                <nav class="flex flex-col" aria-label="Mobile">
+                    <a href="home.html" class="mobile-link">Home <span class="ordinal">01</span></a>
+                    <a href="genres.html" class="mobile-link">Genres <span class="ordinal">02</span></a>
+                    <a href="home.html?type=tv" class="mobile-link">TV series <span class="ordinal">03</span></a>
+                    <a href="home.html?view=new" class="mobile-link">New releases <span class="ordinal">04</span></a>
+                    <a href="home.html?view=upcoming" class="mobile-link">Upcoming <span class="ordinal">05</span></a>
+                    <a href="history.html" class="mobile-link">History <span class="ordinal">06</span></a>
+                </nav>
             </div>
         </div>
     </header>
 
-    <section class="relative w-full h-[40vh] flex items-center justify-start pb-12 border-b border-zinc-900" style="background-image: linear-gradient(to right, rgba(9,9,11,1) 10%, rgba(9,9,11,0.4) 50%, rgba(9,9,11,0.8) 100%), url('https://s4.anilist.co/file/anilistcdn/media/anime/banner/101922-YfZhKABsomRy.jpg'); background-size: cover; background-position: center;">
-        <div class="relative z-20 max-w-[1400px] mx-auto px-6 w-full mt-16">
-            <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight drop-shadow-2xl mb-3">Your Watch History</h1>
-            <p id="history-subtitle" class="text-sm text-zinc-300 max-w-md leading-relaxed font-medium">Your viewing log is completely empty. Start exploring to build your history.</p>
+    <section class="history-hero" aria-labelledby="history-title">
+        <div id="history-hero-bg" class="history-hero-bg" aria-hidden="true"></div>
+        <div class="wrap history-hero-inner">
+            <div class="max-w-2xl">
+                <p class="eyebrow">Library / History</p>
+                <h1 id="history-title" class="history-title mt-5">Your watch history<span class="text-[var(--accent)]">.</span></h1>
+                <p id="history-subtitle" class="mt-5 max-w-xl text-[13px] leading-relaxed text-[var(--text-2)] md:text-[14px]">
+                    Your viewing log is completely empty. Start exploring to build your history.
+                </p>
+                <p class="mt-4 font-mono text-[10px] tracking-[0.04em] text-[var(--text-3)]">Stored on this device only · never uploaded</p>
+            </div>
+
+            <div class="history-stat">
+                <strong id="history-count">0</strong>
+                <span>titles logged</span>
+            </div>
         </div>
     </section>
 
-    <main class="max-w-[1400px] mx-auto px-6 py-12 w-full flex-1">
-        <div class="flex items-center justify-between mb-6 border-b border-zinc-900 pb-4">
-            <h2 class="text-xl font-black tracking-tight text-white uppercase">History Log</h2>
-            <button onclick="clearHistory()" class="text-xs text-red-500 hover:text-red-400 font-bold uppercase tracking-widest transition">Clear History ⊗</button>
-        </div>
-        <div id="history-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 md:gap-6">
+    <main class="wrap flex-1 py-10 md:py-14">
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] pb-4">
+            <div class="flex items-baseline gap-3">
+                <h2 class="section-title">History log</h2>
+                <span class="ordinal hidden sm:inline">LOCAL</span>
             </div>
+            <button id="clear-history-btn" type="button" onclick="clearHistory()" class="history-clear" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M7 7l1 13h8l1-13"/></svg>
+                Clear history
+            </button>
+        </div>
+
+        <div id="history-grid" class="grid grid-cols-2 gap-x-3.5 gap-y-6 sm:grid-cols-3 md:grid-cols-4 md:gap-x-4 lg:grid-cols-5 xl:grid-cols-6"></div>
     </main>
 
-    <footer class="w-full bg-[#050505] border-t border-zinc-900 pt-16 pb-8 mt-auto">
-        <div class="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between gap-8 md:gap-12">
-            <div class="max-w-xs space-y-4">
-                <span class="text-3xl font-black tracking-tight text-white cursor-pointer" onclick="window.location.href='index.html'">Anime<span class="text-indigo-500">.TV</span></span>
-                <p class="text-xs text-zinc-500 leading-relaxed">Anime.TV does not store any files on our server, we only link to the media which is hosted on 3rd party services.</p>
+    <footer class="site-footer">
+        <div class="wrap py-14 md:py-16">
+            <div class="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-8">
+                <div class="max-w-xs">
+                    <a href="home.html" class="brand" aria-label="Anime.TV home">Anime<span class="dot">.</span><span class="tv">TV</span></a>
+                    <p class="mt-4 text-[12.5px] leading-relaxed text-[var(--text-3)]">
+                        A quieter way to find what to watch next. Anime.TV links to media hosted elsewhere and stores no files.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Navigation</h4>
+                    <a href="home.html" class="footer-link">Home</a>
+                    <a href="genres.html" class="footer-link">Genres</a>
+                    <a href="home.html?type=movie" class="footer-link">Movies</a>
+                    <a href="history.html" class="footer-link">History</a>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Browse</h4>
+                    <a href="home.html?view=new" class="footer-link">New releases</a>
+                    <a href="home.html?view=ongoing" class="footer-link">Ongoing</a>
+                    <a href="home.html?view=upcoming" class="footer-link">Upcoming</a>
+                    <a href="home.html?view=shuffle" class="footer-link">Random title</a>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Support</h4>
+                    <button type="button" onclick="openBugModal()" class="footer-link">Report a bug</button>
+                    <a href="terms.html" class="footer-link">Terms of service</a>
+                    <a href="privacy.html" class="footer-link">Privacy policy</a>
+                </div>
             </div>
-            <div class="flex flex-wrap gap-12 md:gap-24 text-sm">
-                <div class="space-y-3">
-                    <h4 class="font-black text-white tracking-widest uppercase text-xs mb-4">Navigation</h4>
-                    <a href="home.html" class="block text-zinc-400 hover:text-indigo-400 transition">Home</a>
-                    <a href="genres.html" class="block text-zinc-400 hover:text-indigo-400 transition">Genres</a>
-                    <a href="home.html?type=movie" class="block text-zinc-400 hover:text-indigo-400 transition">Movies</a>
-                </div>
-                <div class="space-y-3">
-                    <h4 class="font-black text-white tracking-widest uppercase text-xs mb-4">Quick Links</h4>
-                    <a href="home.html?view=ongoing" class="block text-zinc-400 hover:text-indigo-400 transition">Ongoing</a>
-                    <a href="home.html?view=upcoming" class="block text-zinc-400 hover:text-indigo-400 transition">Upcoming</a>
-                    <a href="home.html?view=shuffle" class="block text-zinc-400 hover:text-indigo-400 transition">Random Anime</a>
-                </div>
-                <div class="space-y-3">
-                    <h4 class="font-black text-white tracking-widest uppercase text-xs mb-4">Support</h4>
-                    <button onclick="openBugModal()" class="block text-zinc-400 hover:text-[#d76145] transition text-left font-medium">Report Bug / Request</button>
-                    <a href="terms.html" class="block text-zinc-400 hover:text-indigo-400 transition">Terms of Service</a>
-                    <a href="privacy.html" class="block text-zinc-400 hover:text-indigo-400 transition">Privacy Policy</a>
-                </div>
+
+            <div class="mt-12 flex flex-col gap-3 border-t border-[var(--line)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p class="font-mono text-[10.5px] tracking-[0.02em] text-[var(--text-3)]">&copy; 2026 Anime.TV</p>
+                <p class="font-mono text-[10.5px] tracking-[0.02em] text-[var(--text-3)]">Catalog data from Jikan and MyAnimeList</p>
             </div>
         </div>
     </footer>
 
-    <div id="bug-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeBugModal()"></div>
-        <div class="relative bg-[#1c1d22] w-[90%] max-w-lg rounded-2xl p-6 md:p-8 shadow-2xl border border-zinc-800 transform scale-95 transition-transform duration-300" id="bug-modal-content">
-            <button onclick="closeBugModal()" class="absolute top-5 right-5 text-zinc-500 hover:text-white transition bg-zinc-800/50 hover:bg-zinc-700 p-2 rounded-full">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <div id="bug-modal" class="fixed inset-0 z-[100] flex hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300" role="dialog" aria-modal="true" aria-labelledby="bug-modal-title">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="closeBugModal()"></div>
+
+        <div id="bug-modal-content" class="dialog relative w-full max-w-lg scale-95 p-6 transition-transform duration-300 md:p-8">
+            <button type="button" onclick="closeBugModal()" class="icon-btn absolute right-4 top-4 border border-[var(--line)] bg-[var(--field-bg)]" aria-label="Close dialog">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
             </button>
-            <h2 class="text-2xl font-bold text-white mb-2 tracking-tight">Send Request</h2>
-            <p class="text-sm text-zinc-400 mb-6 leading-relaxed pr-6">If you can't find your favourite anime in our library, please submit a request. We will try to make it available as soon as possible.</p>
-            <form id="bug-form" action="https://formspree.io/f/mwvznpjo" method="POST" class="space-y-4">
-                <input type="text" name="anime_name" placeholder="Anime name or Bug title" required class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition shadow-inner">
-                <input type="text" name="link" placeholder="Link to MAL/ AL/ anidb or any if possible" class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition shadow-inner">
-                <textarea name="details" placeholder="More details about it if possible" rows="4" class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition resize-none hide-scroll shadow-inner"></textarea>
-                <button type="submit" class="w-full bg-[#d76145] hover:bg-[#eb6a4b] text-white font-bold py-3.5 rounded-xl transition duration-300 mt-4 shadow-[0_4px_15px_rgba(215,97,69,0.3)]">
-                    Send Request
-                </button>
+
+            <div class="dialog-icon mb-5" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.6-.7L3 21l1.8-5.1A8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4Z"/></svg>
+            </div>
+
+            <h2 id="bug-modal-title" class="font-display text-[24px] font-semibold tracking-[-0.03em] text-[var(--text)]">Send a request</h2>
+            <p class="mt-2 max-w-sm pr-6 text-[12.5px] leading-relaxed text-[var(--text-3)]">Missing a title, or found something broken? Send the details and it lands with the team.</p>
+
+            <form id="bug-form" action="https://formspree.io/f/mwvznpjo" method="POST" class="mt-6 space-y-2.5">
+                <label for="bug-anime" class="sr-only">Anime name or bug title</label>
+                <input id="bug-anime" type="text" name="anime_name" placeholder="Anime name or bug title" required class="field">
+
+                <label for="bug-link" class="sr-only">Link to MyAnimeList, AniList, AniDB, or another source</label>
+                <input id="bug-link" type="text" name="link" placeholder="Link to MAL, AniList, AniDB (optional)" class="field">
+
+                <label for="bug-details" class="sr-only">More details</label>
+                <textarea id="bug-details" name="details" rows="4" placeholder="Anything else that helps" class="field hide-scroll"></textarea>
+
+                <button type="submit" class="btn-accent mt-2 w-full" style="height:46px;">Send request</button>
             </form>
         </div>
     </div>
 
     <script src="script.js"></script>
+    <script src="ui.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => { renderHistory(); });
+
+        function historyId(item) {
+            return item.mal_id || item.id || item.anime_id || '';
+        }
+
         function renderHistory() {
             const history = JSON.parse(localStorage.getItem('animeHistory') || '[]');
             const container = document.getElementById('history-grid');
             const subtitle = document.getElementById('history-subtitle');
+            const countEl = document.getElementById('history-count');
+            const clearBtn = document.getElementById('clear-history-btn');
+            const heroBg = document.getElementById('history-hero-bg');
+
+            countEl.textContent = history.length;
+            clearBtn.disabled = history.length === 0;
 
             if (history.length === 0) {
+                subtitle.textContent = "Your viewing log is completely empty. Start exploring to build your history.";
+                heroBg.style.backgroundImage = '';
                 container.innerHTML = `
-                    <div class="col-span-full py-20 flex flex-col items-center justify-center gap-4">
-                        <svg class="w-16 h-16 text-zinc-800" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8zm1-13h-2v6l5.25 3.15.75-1.23-4-2.37V7z"/></svg>
-                        <p class="text-zinc-500 text-sm font-bold text-center">No watch history yet<br><span class="font-normal text-xs">Start watching anime to see your history here</span></p>
-                        <button onclick="window.location.href='home.html'" class="mt-2 bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded-lg font-bold text-sm transition">Browse Anime</button>
+                    <div class="empty-wrap col-span-full">
+                        <div class="empty-state flex flex-col items-center gap-4 text-center">
+                            <svg class="h-14 w-14 text-[var(--text-3)] opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+                                <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>
+                            </svg>
+                            <div>
+                                <p class="font-display text-[20px] font-semibold tracking-[-0.03em] text-[var(--text)]">Nothing watched yet.</p>
+                                <p class="mx-auto mt-2 max-w-sm text-[12.5px] leading-relaxed text-[var(--text-3)]">
+                                    Open a title and pick an episode; it will show up here so you can pick the thread back up.
+                                </p>
+                            </div>
+                            <a href="home.html" class="btn-primary mt-1">
+                                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.4v13.2L19 12z"/></svg>
+                                Browse the catalog
+                            </a>
+                        </div>
                     </div>
                 `;
-                subtitle.textContent = "Your viewing log is completely empty. Start exploring to build your history.";
-            } else {
-                subtitle.textContent = `You have ${history.length} titles in your viewing log. Pick up right where you left off.`;
-                container.innerHTML = '';
-                history.forEach(anime => {
-                    container.innerHTML += `
-                        <div class="relative group cursor-pointer aspect-[2/3] rounded-xl overflow-hidden border border-zinc-900 hover:border-indigo-500 transition duration-300 shadow-lg" onclick="window.location.href='info.html?id=${anime.mal_id}'">
-                            <img src="${anime.img}" alt="${anime.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col justify-end p-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition duration-300">
-                                <h3 class="font-bold text-xs md:text-sm line-clamp-2 text-white">${anime.title}</h3>
-                                <p class="text-[10px] text-indigo-400 mt-1 font-bold">▶ Resume</p>
-                            </div>
-                        </div>
-                    `;
-                });
+                return;
             }
+
+            subtitle.textContent = `You have ${history.length} ${history.length === 1 ? 'title' : 'titles'} in your viewing log. Pick up right where you left off.`;
+            const firstImage = history.find(item => item.img)?.img;
+            if (firstImage) {
+                heroBg.style.backgroundImage = `url('${firstImage}')`;
+            }
+
+            container.innerHTML = '';
+            history.forEach((anime, index) => {
+                const id = historyId(anime);
+                const title = anime.title || 'Untitled';
+                const episode = anime.ep || anime.episode;
+                const card = document.createElement('a');
+                card.className = 'history-card';
+                card.href = id ? `info.html?id=${encodeURIComponent(id)}` : 'home.html';
+                card.setAttribute('aria-label', `Resume ${title}`);
+                card.innerHTML = `
+                    <img src="${anime.img || ''}" alt="${title}" loading="lazy" onerror="this.style.opacity='0'">
+                    <span class="history-index">${String(index + 1).padStart(2, '0')}</span>
+                    <span class="history-shade">
+                        <h3>${title}</h3>
+                        <span class="history-resume">
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.4v13.2L19 12z"/></svg>
+                            ${episode ? `Resume ep ${episode}` : 'Resume title'}
+                        </span>
+                    </span>
+                `;
+                container.appendChild(card);
+            });
         }
+
         function clearHistory() {
-            if(confirm("Are you sure you want to clear your entire watch history?")) {
+            if (confirm("Are you sure you want to clear your entire watch history?")) {
                 localStorage.setItem('animeHistory', '[]');
                 renderHistory();
             }

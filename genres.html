@@ -3,130 +3,453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime.TV — Genres</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-[#09090b] text-zinc-100 font-sans min-h-screen selection:bg-indigo-500 selection:text-white flex flex-col overflow-x-hidden">
+    <meta name="theme-color" content="#050507">
+    <title>Genres — Anime.TV</title>
+    <meta name="description" content="Browse the Anime.TV catalog by genre. Action, drama, romance, science fiction and more, indexed from MyAnimeList.">
 
-    <header class="w-full bg-[#09090b]/90 backdrop-blur-md border-b border-zinc-900 sticky top-0 z-50 px-6 py-4 shrink-0">
-        <div class="max-w-[1400px] mx-auto flex flex-wrap xl:flex-nowrap items-center justify-between gap-6">
-            <div class="flex items-center gap-10">
-                <span class="text-3xl font-black tracking-tight text-white cursor-pointer" onclick="window.location.href='index.html'">Anime<span class="text-indigo-500">.TV</span></span>
-                <nav class="hidden lg:flex items-center gap-8 text-[13px] font-bold tracking-widest text-zinc-400">
-                    <a href="genres.html" class="nav-link hover:text-white transition uppercase">Genres</a>
-                    <div class="relative group z-50 flex items-center">
-                        <button class="nav-link hover:text-white flex items-center gap-1.5 py-2 transition uppercase">TYPES <span class="text-[10px]">▼</span></button>
-                        <div class="absolute top-full left-0 pt-4 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-2xl p-2 flex flex-col gap-1">
-                                <a href="home.html?type=tv" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">TV Series</a>
-                                <a href="home.html?type=movie" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">Movies</a>
-                                <a href="home.html?type=ova" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">OVAs</a>
-                                <a href="home.html?type=special" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">Specials</a>
-                            </div>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="ui.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    maxWidth: { shell: '1560px' },
+                    fontFamily: {
+                        sans: ['Manrope', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ['Sora', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        .genre-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-left: 20px;
+            border-left: 1px solid var(--line-strong);
+        }
+        .genre-stat strong {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: clamp(38px, 5vw, 58px);
+            font-weight: 500;
+            letter-spacing: -0.05em;
+            line-height: 1;
+            color: var(--text);
+            font-variant-numeric: tabular-nums;
+        }
+        .genre-stat span {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 10px;
+            letter-spacing: 0.06em;
+            color: var(--text-3);
+        }
+
+        #genre-grid { scroll-margin-top: 120px; }
+
+        .genre-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 28px;
+            min-height: 168px;
+            padding: 17px 18px;
+            border-radius: 16px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            overflow: hidden;
+            isolation: isolate;
+            transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), background-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+        }
+        .genre-card::before {
+            content: "";
+            position: absolute;
+            right: -30%;
+            bottom: -70%;
+            width: 90%;
+            aspect-ratio: 1;
+            border-radius: 999px;
+            background: radial-gradient(circle, var(--accent-soft), transparent 68%);
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.35s var(--ease);
+        }
+        .genre-card:hover,
+        .genre-card:focus-visible {
+            transform: translateY(-3px);
+            border-color: color-mix(in srgb, var(--accent) 48%, var(--line));
+            background: var(--surface);
+            box-shadow: 0 20px 44px -28px rgba(0, 0, 0, 0.9);
+        }
+        .genre-card:hover::before { opacity: 1; }
+
+        .genre-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .genre-n {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 10px;
+            letter-spacing: 0.06em;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+        }
+        .genre-card:hover .genre-n { color: var(--accent-text); }
+        .genre-top svg {
+            width: 15px;
+            height: 15px;
+            color: var(--text-3);
+            opacity: 0.6;
+            transition: transform 0.25s var(--ease), color 0.25s var(--ease), opacity 0.25s var(--ease);
+        }
+        .genre-card:hover .genre-top svg {
+            color: var(--accent-text);
+            opacity: 1;
+            transform: translate(2px, -2px);
+        }
+
+        .genre-name {
+            display: block;
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: clamp(18px, 2.1vw, 23px);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.05;
+            color: var(--text);
+            text-wrap: balance;
+            transition: color 0.25s var(--ease);
+        }
+        .genre-card:hover .genre-name { color: var(--accent-text); }
+        .genre-count {
+            display: block;
+            margin-top: 7px;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 9.5px;
+            letter-spacing: 0.03em;
+            color: var(--text-3);
+        }
+
+        .genre-skeleton {
+            min-height: 168px;
+            border-radius: 16px;
+            border: 1px solid var(--line);
+            background:
+                linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.035) 48%, transparent 66%),
+                var(--panel);
+            background-size: 220% 100%, 100% 100%;
+            animation: genreSheen 1.8s linear infinite;
+        }
+        @keyframes genreSheen {
+            from { background-position: 160% 0, 0 0; }
+            to { background-position: -60% 0, 0 0; }
+        }
+
+        #genre-grid > p { grid-column: 1 / -1; }
+
+        @media (max-width: 767px) {
+            .genre-card { min-height: 148px; gap: 22px; }
+            .genre-stat { padding-left: 0; border-left: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .genre-skeleton { animation: none; }
+        }
+    </style>
+</head>
+<body class="page flex min-h-screen flex-col antialiased">
+    <div class="ambient" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <a href="#genre-grid" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-[var(--btn-bg)] focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold focus:text-[var(--btn-fg)]">Skip to genres</a>
+
+    <header id="site-header">
+        <div class="relative mx-auto w-full max-w-shell">
+            <div class="nav-shell flex items-center gap-3 px-3 py-2.5 md:px-4">
+                <a href="home.html" class="brand py-1" aria-label="Anime.TV home">Anime<span class="dot">.</span><span class="tv">TV</span></a>
+
+                <nav aria-label="Primary" class="ml-2 hidden items-center gap-0.5 lg:flex">
+                    <a href="home.html" class="nav-link">Home</a>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-genres">
+                            Genres
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-genres" class="menu-panel w-56" data-menu>
+                            <a class="menu-item" href="genres.html">All genres <span class="menu-meta">INDEX</span></a>
+                            <a class="menu-item" href="home.html?genre_id=1">Action</a>
+                            <a class="menu-item" href="home.html?genre_id=2">Adventure</a>
+                            <a class="menu-item" href="home.html?genre_id=4">Comedy</a>
+                            <a class="menu-item" href="home.html?genre_id=8">Drama</a>
+                            <a class="menu-item" href="home.html?genre_id=10">Fantasy</a>
+                            <a class="menu-item" href="home.html?genre_id=22">Romance</a>
+                            <a class="menu-item" href="home.html?genre_id=24">Sci-fi</a>
                         </div>
                     </div>
-                    <a href="home.html?view=new" class="nav-link hover:text-white transition uppercase">New Releases</a>
-                    <a href="history.html" class="nav-link hover:text-white transition uppercase">History</a>
-                    <a href="home.html?view=ongoing" class="nav-link hover:text-white transition uppercase">Ongoing</a>
-                    <div class="relative group z-50 flex items-center">
-                        <button class="nav-link hover:text-white flex items-center gap-1.5 py-2 transition uppercase">A-Z List <span class="text-[10px]">▼</span></button>
-                        <div class="absolute top-full left-0 pt-4 w-80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-2xl p-4">
-                                <div id="alpha-index" class="flex flex-wrap gap-1.5"></div>
-                            </div>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-types">
+                            Types
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-types" class="menu-panel w-52" data-menu>
+                            <a class="menu-item" href="home.html?type=tv">TV series <span class="menu-meta">TV</span></a>
+                            <a class="menu-item" href="home.html?type=movie">Movies <span class="menu-meta">MV</span></a>
+                            <a class="menu-item" href="home.html?type=ova">OVAs <span class="menu-meta">OVA</span></a>
+                            <a class="menu-item" href="home.html?type=special">Specials <span class="menu-meta">SP</span></a>
+                            <a class="menu-item" href="home.html?type=ona">ONAs <span class="menu-meta">ONA</span></a>
                         </div>
                     </div>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-alpha">
+                            A-Z
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-alpha" class="menu-panel alpha-panel w-[336px]" data-menu>
+                            <div id="alpha-index" class="grid grid-cols-7 gap-1"></div>
+                        </div>
+                    </div>
+
+                    <a href="history.html" class="nav-link">History</a>
                 </nav>
-            </div>
-            
-            <div class="flex w-full xl:w-auto items-center justify-end">
-                <div class="flex items-center bg-[#151518] border border-zinc-800 hover:border-zinc-700 transition rounded-full px-4 py-2 w-full sm:w-[400px] shadow-lg focus-within:ring-2 focus-within:ring-indigo-500/50">
-                    <button id="search-btn" class="text-white pr-3 hover:text-indigo-400 transition" onclick="window.location.href='home.html?q=' + document.getElementById('search-input').value">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+
+                <form action="home.html" method="GET" role="search" class="search-shell ml-auto hidden md:flex md:w-[240px] lg:w-[300px]">
+                    <button id="search-btn" type="submit" class="icon-btn" aria-label="Search anime" style="width:32px;height:32px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
                     </button>
-                    <input type="text" id="search-input" placeholder="Search anime" class="flex-1 bg-transparent text-sm text-white focus:outline-none placeholder-zinc-500 w-full font-medium tracking-wide">
+                    <label for="search-input" class="sr-only">Search anime</label>
+                    <input id="search-input" name="q" type="text" placeholder="Search anime" autocomplete="off" spellcheck="false">
+                </form>
+
+                <div class="ml-auto flex items-center gap-1.5 md:ml-0">
+                    <button id="theme-toggle" type="button" class="icon-btn theme-btn" title="Toggle theme" aria-label="Toggle theme">
+                        <span id="theme-icon" aria-hidden="true"></span>
+                    </button>
+                    <button id="mobile-menu-btn" type="button" class="icon-btn border border-[var(--line)] lg:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+                        <svg class="menu-open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                        <svg class="menu-close-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    </button>
                 </div>
+            </div>
+
+            <div id="mobile-menu" class="mobile-menu lg:hidden" aria-hidden="true">
+                <form action="home.html" method="GET" role="search" class="mb-2 flex items-center gap-2 border-b border-[var(--line)] p-1 pb-3">
+                    <label for="mobile-q" class="sr-only">Search anime</label>
+                    <input id="mobile-q" name="q" type="text" placeholder="Search anime" class="field" style="height:40px;">
+                    <button type="submit" class="btn-accent" style="height:40px;flex:none;">Search</button>
+                </form>
+                <nav class="flex flex-col" aria-label="Mobile">
+                    <a href="home.html" class="mobile-link">Home <span class="ordinal">01</span></a>
+                    <a href="genres.html" class="mobile-link">All genres <span class="ordinal">02</span></a>
+                    <a href="home.html?type=tv" class="mobile-link">TV series <span class="ordinal">03</span></a>
+                    <a href="home.html?type=movie" class="mobile-link">Movies <span class="ordinal">04</span></a>
+                    <a href="home.html?view=new" class="mobile-link">New releases <span class="ordinal">05</span></a>
+                    <a href="history.html" class="mobile-link">History <span class="ordinal">06</span></a>
+                </nav>
             </div>
         </div>
     </header>
 
-    <main class="max-w-[1400px] mx-auto px-6 py-12 flex-1 w-full">
-        <div class="flex flex-col items-center justify-center mb-12 border-b border-zinc-900 pb-8 text-center">
-            <h1 class="text-4xl md:text-5xl font-black tracking-tight text-white mb-4">Browse by Genre</h1>
-            <p class="text-zinc-400 font-medium max-w-xl">Explore thousands of anime sorted by their official categories. Click any genre to instantly filter the entire database.</p>
-        </div>
-        
-        <div id="genre-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-            <p class="text-zinc-500 text-sm col-span-full text-center py-10">Connecting to database...</p>
-        </div>
+    <main class="page-main">
+        <section class="page-hero">
+            <div class="wrap">
+                <div class="grid gap-9 md:grid-cols-[1.35fr_1fr] md:items-end md:gap-12">
+                    <div>
+                        <p class="eyebrow">Index / Genres</p>
+                        <h1 class="mt-5">Browse by genre<span class="text-[var(--accent)]">.</span></h1>
+                        <p class="lede mt-5">
+                            Every category in the catalog, from the loudest shonen to the quietest slice of life.
+                            Pick one and the grid does the rest.
+                        </p>
+                    </div>
+
+                    <div class="flex md:justify-end">
+                        <div class="genre-stat">
+                            <strong id="genre-count">—</strong>
+                            <span>categories indexed</span>
+                            <span>Source · MyAnimeList</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex flex-wrap items-center gap-3">
+                    <a href="home.html" class="btn-primary">
+                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.4v13.2L19 12z"/></svg>
+                        Browse all anime
+                    </a>
+                    <button type="button" onclick="openBugModal()" class="btn-ghost">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                        Request a genre
+                    </button>
+                    <p class="ml-auto hidden font-mono text-[10px] tracking-[0.04em] text-[var(--text-3)] sm:block">Sorted alphabetically</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="wrap py-10 md:py-14" aria-labelledby="genre-grid-label">
+            <div class="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-[var(--line)] pb-4">
+                <h2 id="genre-grid-label" class="section-title">All categories</h2>
+                <p id="genre-status" class="font-mono text-[10px] tracking-[0.04em] text-[var(--text-3)]" role="status" aria-live="polite">Loading categories…</p>
+            </div>
+
+            <div id="genre-grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 md:gap-4 lg:grid-cols-5 xl:grid-cols-6">
+                <div class="genre-skeleton"></div>
+                <div class="genre-skeleton"></div>
+                <div class="genre-skeleton"></div>
+                <div class="genre-skeleton"></div>
+                <div class="genre-skeleton"></div>
+                <div class="genre-skeleton"></div>
+                <div class="genre-skeleton"></div>
+                <div class="genre-skeleton"></div>
+                <div class="genre-skeleton"></div>
+                <div class="genre-skeleton"></div>
+                <div class="genre-skeleton"></div>
+                <div class="genre-skeleton"></div>
+            </div>
+        </section>
+
+        <section class="wrap pb-16 md:pb-20">
+            <div class="surface-panel flex flex-col gap-5 p-6 md:flex-row md:items-center md:justify-between md:p-8">
+                <div>
+                    <p class="eyebrow">Missing something?</p>
+                    <h2 class="mt-3 font-display text-[22px] font-semibold tracking-[-0.03em] text-[var(--text)] md:text-[26px]">A category we haven't indexed yet.</h2>
+                    <p class="mt-2 max-w-xl text-[12.5px] leading-relaxed text-[var(--text-3)]">Tell us what you were looking for and it goes on the list. No account needed.</p>
+                </div>
+                <button type="button" onclick="openBugModal()" class="btn-primary shrink-0">Send a request</button>
+            </div>
+        </section>
     </main>
 
-    <footer class="w-full bg-[#050505] border-t border-zinc-900 pt-16 pb-8 mt-auto">
-        <div class="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between gap-8 md:gap-12">
-            <div class="max-w-xs space-y-4">
-                <span class="text-3xl font-black tracking-tight text-white cursor-pointer" onclick="window.location.href='index.html'">Anime<span class="text-indigo-500">.TV</span></span>
-                <p class="text-xs text-zinc-500 leading-relaxed">Anime.TV does not store any files on our server, we only link to the media which is hosted on 3rd party services.</p>
+    <footer class="site-footer">
+        <div class="wrap py-14 md:py-16">
+            <div class="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-8">
+                <div class="max-w-xs">
+                    <a href="home.html" class="brand" aria-label="Anime.TV home">Anime<span class="dot">.</span><span class="tv">TV</span></a>
+                    <p class="mt-4 text-[12.5px] leading-relaxed text-[var(--text-3)]">
+                        A quieter way to find what to watch next. Anime.TV links to media hosted elsewhere and stores no files.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Navigation</h4>
+                    <a href="home.html" class="footer-link">Home</a>
+                    <a href="genres.html" class="footer-link">Genres</a>
+                    <a href="home.html?type=movie" class="footer-link">Movies</a>
+                    <a href="history.html" class="footer-link">History</a>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Browse</h4>
+                    <a href="home.html?view=new" class="footer-link">New releases</a>
+                    <a href="home.html?view=ongoing" class="footer-link">Ongoing</a>
+                    <a href="home.html?view=upcoming" class="footer-link">Upcoming</a>
+                    <a href="home.html?view=shuffle" class="footer-link">Random title</a>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Support</h4>
+                    <button type="button" onclick="openBugModal()" class="footer-link">Report a bug</button>
+                    <a href="terms.html" class="footer-link">Terms of service</a>
+                    <a href="privacy.html" class="footer-link">Privacy policy</a>
+                </div>
             </div>
-            <div class="flex flex-wrap gap-12 md:gap-24 text-sm">
-                <div class="space-y-3">
-                    <h4 class="font-black text-white tracking-widest uppercase text-xs mb-4">Navigation</h4>
-                    <a href="home.html" class="block text-zinc-400 hover:text-indigo-400 transition">Home</a>
-                    <a href="genres.html" class="block text-zinc-400 hover:text-indigo-400 transition">Genres</a>
-                    <a href="home.html?type=movie" class="block text-zinc-400 hover:text-indigo-400 transition">Movies</a>
-                </div>
-                <div class="space-y-3">
-                    <h4 class="font-black text-white tracking-widest uppercase text-xs mb-4">Quick Links</h4>
-                    <a href="home.html?view=ongoing" class="block text-zinc-400 hover:text-indigo-400 transition">Ongoing</a>
-                    <a href="home.html?view=upcoming" class="block text-zinc-400 hover:text-indigo-400 transition">Upcoming</a>
-                    <a href="home.html?view=shuffle" class="block text-zinc-400 hover:text-indigo-400 transition">Random Anime</a>
-                </div>
-                <div class="space-y-3">
-                    <h4 class="font-black text-white tracking-widest uppercase text-xs mb-4">Support</h4>
-                    <button onclick="openBugModal()" class="block text-zinc-400 hover:text-[#d76145] transition text-left font-medium">Report Bug / Request</button>
-                    <a href="terms.html" class="block text-zinc-400 hover:text-indigo-400 transition">Terms of Service</a>
-                    <a href="privacy.html" class="block text-zinc-400 hover:text-indigo-400 transition">Privacy Policy</a>
-                </div>
+
+            <div class="mt-12 flex flex-col gap-3 border-t border-[var(--line)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p class="font-mono text-[10.5px] tracking-[0.02em] text-[var(--text-3)]">&copy; 2026 Anime.TV</p>
+                <p class="font-mono text-[10.5px] tracking-[0.02em] text-[var(--text-3)]">Catalog data from Jikan and MyAnimeList</p>
             </div>
         </div>
     </footer>
 
-    <div id="bug-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeBugModal()"></div>
-        <div class="relative bg-[#1c1d22] w-[90%] max-w-lg rounded-2xl p-6 md:p-8 shadow-2xl border border-zinc-800 transform scale-95 transition-transform duration-300" id="bug-modal-content">
-            <button onclick="closeBugModal()" class="absolute top-5 right-5 text-zinc-500 hover:text-white transition bg-zinc-800/50 hover:bg-zinc-700 p-2 rounded-full">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <div id="bug-modal" class="fixed inset-0 z-[100] flex hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300" role="dialog" aria-modal="true" aria-labelledby="bug-modal-title">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="closeBugModal()"></div>
+
+        <div id="bug-modal-content" class="dialog relative w-full max-w-lg scale-95 p-6 transition-transform duration-300 md:p-8">
+            <button type="button" onclick="closeBugModal()" class="icon-btn absolute right-4 top-4 border border-[var(--line)] bg-[var(--field-bg)]" aria-label="Close dialog">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
             </button>
-            <h2 class="text-2xl font-bold text-white mb-2 tracking-tight">Send Request</h2>
-            <p class="text-sm text-zinc-400 mb-6 leading-relaxed pr-6">If you can't find your favourite anime in our library, please submit a request. We will try to make it available as soon as possible.</p>
-            <form id="bug-form" action="https://formspree.io/f/mwvznpjo" method="POST" class="space-y-4">
-                <input type="text" name="anime_name" placeholder="Anime name or Bug title" required class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition shadow-inner">
-                <input type="text" name="link" placeholder="Link to MAL/ AL/ anidb or any if possible" class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition shadow-inner">
-                <textarea name="details" placeholder="More details about it if possible" rows="4" class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition resize-none hide-scroll shadow-inner"></textarea>
-                <button type="submit" class="w-full bg-[#d76145] hover:bg-[#eb6a4b] text-white font-bold py-3.5 rounded-xl transition duration-300 mt-4 shadow-[0_4px_15px_rgba(215,97,69,0.3)]">
-                    Send Request
-                </button>
+
+            <div class="dialog-icon mb-5" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.6-.7L3 21l1.8-5.1A8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4Z"/></svg>
+            </div>
+
+            <h2 id="bug-modal-title" class="font-display text-[24px] font-semibold tracking-[-0.03em] text-[var(--text)]">Send a request</h2>
+            <p class="mt-2 max-w-sm pr-6 text-[12.5px] leading-relaxed text-[var(--text-3)]">Missing a title, or found something broken? Send the details and it lands with the team.</p>
+
+            <form id="bug-form" action="https://formspree.io/f/mwvznpjo" method="POST" class="mt-6 space-y-2.5">
+                <label for="bug-anime" class="sr-only">Anime name or bug title</label>
+                <input id="bug-anime" type="text" name="anime_name" placeholder="Anime name or bug title" required class="field">
+
+                <label for="bug-link" class="sr-only">Link to MyAnimeList, AniList, AniDB, or another source</label>
+                <input id="bug-link" type="text" name="link" placeholder="Link to MAL, AniList, AniDB (optional)" class="field">
+
+                <label for="bug-details" class="sr-only">More details</label>
+                <textarea id="bug-details" name="details" rows="4" placeholder="Anything else that helps" class="field hide-scroll"></textarea>
+
+                <button type="submit" class="btn-accent mt-2 w-full" style="height:46px;">Send request</button>
             </form>
         </div>
     </div>
 
     <script src="script.js"></script>
+    <script src="ui.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const genreGrid = document.getElementById('genre-grid');
+            const genreCount = document.getElementById('genre-count');
+            const genreStatus = document.getElementById('genre-status');
+
+            const arrow = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>`;
+
             fetch('https://api.jikan.moe/v4/genres/anime')
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('request failed');
+                    return res.json();
+                })
                 .then(data => {
-                    const genres = data.data.filter(g => g.count > 100); 
+                    const genres = (data.data || [])
+                        .filter(g => g.count > 100)
+                        .sort((a, b) => a.name.localeCompare(b.name));
+
                     genreGrid.innerHTML = '';
-                    genres.forEach(g => {
-                        genreGrid.innerHTML += `
-                            <a href="home.html?genre_id=${g.mal_id}&genre_name=${encodeURIComponent(g.name)}" class="bg-[#151518] border border-zinc-800 hover:border-indigo-500 hover:bg-indigo-600/10 text-white rounded-2xl p-6 text-center font-black uppercase tracking-wider transition duration-300 shadow-lg hover:shadow-indigo-500/20 group flex flex-col items-center justify-center gap-2 aspect-[4/3]">
-                                <span class="block text-sm md:text-base group-hover:text-indigo-400 transition">${g.name}</span>
-                                <span class="text-[10px] text-zinc-500 group-hover:text-indigo-400/70 font-bold block bg-zinc-900 group-hover:bg-indigo-900/40 px-2 py-1 rounded-full transition">${g.count.toLocaleString()} Shows</span>
-                            </a>
+                    if (!genres.length) throw new Error('empty');
+
+                    genres.forEach((g, index) => {
+                        const card = document.createElement('a');
+                        card.href = `home.html?genre_id=${g.mal_id}&genre_name=${encodeURIComponent(g.name)}`;
+                        card.className = 'genre-card';
+                        card.setAttribute('aria-label', `${g.name}, ${g.count.toLocaleString()} shows`);
+                        card.innerHTML = `
+                            <span class="genre-top">
+                                <span class="genre-n">${String(index + 1).padStart(2, '0')}</span>
+                                ${arrow}
+                            </span>
+                            <span>
+                                <span class="genre-name">${g.name}</span>
+                                <span class="genre-count">${g.count.toLocaleString()} shows</span>
+                            </span>
                         `;
+                        genreGrid.appendChild(card);
                     });
-                }).catch(() => { genreGrid.innerHTML = `<p class="text-red-500 col-span-full text-center py-10 font-bold">Failed to load genres.</p>`; });
+
+                    genreCount.textContent = genres.length;
+                    genreStatus.textContent = `${genres.length} categories · sorted A–Z`;
+                })
+                .catch(() => {
+                    genreGrid.innerHTML = '<p class="col-span-full py-16 text-center font-mono text-[12px] text-[var(--text-3)]">Categories could not be loaded. Please refresh in a moment.</p>';
+                    genreCount.textContent = '—';
+                    genreStatus.textContent = 'Unavailable';
+                });
         });
     </script>
 </body>

@@ -3,212 +3,1652 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anime.TV — Premium Home</title>
+    <meta name="theme-color" content="#050507">
+    <title>Anime.TV — Spotlight</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    maxWidth: { shell: '1560px' },
+                    fontFamily: {
+                        sans: ['Manrope', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ['Sora', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+
     <link rel="stylesheet" href="style.css">
-    
+
     <style>
+        /* ============================================================
+           Tokens
+           ============================================================ */
+        :root {
+            --bg: #050507;
+            --bg-elev: #08080b;
+            --panel: #0a0a0f;
+            --surface: #0d0d13;
+            --surface-2: #14141c;
+            --glass: rgba(10, 10, 15, 0.62);
+            --glass-strong: rgba(9, 9, 13, 0.82);
+            --line: rgba(255, 255, 255, 0.08);
+            --line-strong: rgba(255, 255, 255, 0.16);
+            --text: #f6f4f1;
+            --text-2: #b9b4ae;
+            --text-3: #7e7a76;
+            --accent: #ff4a3d;
+            --accent-text: #ff8276;
+            --accent-ink: #180706;
+            --accent-soft: rgba(255, 74, 61, 0.14);
+            --hero-text: #f8f6f3;
+            --hover: rgba(255, 255, 255, 0.06);
+            --field-bg: rgba(255, 255, 255, 0.04);
+            --ghost-bg: rgba(255, 255, 255, 0.06);
+            --ghost-hover: rgba(255, 255, 255, 0.11);
+            --btn-bg: #f2efea;
+            --btn-bg-hover: #ffffff;
+            --btn-fg: #0a0a0c;
+            --dialog: rgba(13, 13, 18, 0.94);
+            --shadow: 0 28px 70px -32px rgba(0, 0, 0, 0.95);
+            --ease: cubic-bezier(0.22, 0.7, 0.2, 1);
+        }
+
+        body.light-mode {
+            --bg: #f3f1ec;
+            --bg-elev: #fbfaf7;
+            --panel: #ffffff;
+            --surface: #ffffff;
+            --surface-2: #f0ede7;
+            --glass: rgba(255, 255, 255, 0.72);
+            --glass-strong: rgba(255, 255, 255, 0.9);
+            --line: rgba(18, 18, 24, 0.1);
+            --line-strong: rgba(18, 18, 24, 0.18);
+            --text: #15151b;
+            --text-2: #5c5a5e;
+            --text-3: #726d67;
+            --accent: #cf2b1d;
+            --accent-text: #b92212;
+            --accent-ink: #fff8f6;
+            --accent-soft: rgba(207, 43, 29, 0.1);
+            --hero-text: #15151b;
+            --hover: rgba(18, 18, 24, 0.05);
+            --field-bg: rgba(18, 18, 24, 0.04);
+            --ghost-bg: rgba(18, 18, 24, 0.05);
+            --ghost-hover: rgba(18, 18, 24, 0.09);
+            --btn-bg: #15151b;
+            --btn-bg-hover: #000000;
+            --btn-fg: #fbfaf7;
+            --dialog: rgba(255, 255, 255, 0.94);
+            --shadow: 0 30px 70px -34px rgba(20, 20, 30, 0.35);
+        }
+
+        /* ============================================================
+           Base
+           ============================================================ */
+        html {
+            overflow-x: clip;
+            scroll-behavior: smooth;
+        }
+
+        body.page {
+            overflow-x: clip;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            zoom: 1;
+        }
+
+        ::selection {
+            background: var(--accent);
+            color: var(--accent-ink);
+        }
+
+        :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+            outline: 2px solid var(--accent-text);
+            outline-offset: 3px;
+        }
+
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .font-display { font-family: 'Sora', ui-sans-serif, system-ui, sans-serif; }
+
+        .glass {
+            background: var(--glass);
+            border: 1px solid var(--line);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            backdrop-filter: blur(20px) saturate(160%);
+        }
+
+        /* ============================================================
+           Type & small parts
+           ============================================================ */
+        .section-title {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: clamp(21px, 2vw, 28px);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: var(--text);
+        }
+
+        #grid-header {
+            text-transform: lowercase;
+        }
+        #grid-header::first-letter {
+            text-transform: uppercase;
+        }
+
+        .section-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-2);
+            white-space: nowrap;
+            transition: color 0.2s var(--ease);
+        }
+        .section-link:hover { color: var(--accent-text); }
+        .section-link svg { width: 14px; height: 14px; }
+
+        .ordinal {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 10.5px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            color: var(--text-3);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ============================================================
+           Buttons
+           ============================================================ */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            height: 48px;
+            padding: 0 24px;
+            border-radius: 999px;
+            background: var(--btn-bg);
+            color: var(--btn-fg);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            box-shadow: 0 14px 34px -18px rgba(0, 0, 0, 0.9);
+            transition: background-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+        }
+        .btn-primary:hover {
+            background: var(--btn-bg-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.95);
+        }
+        .btn-primary:active { transform: translateY(0) scale(0.99); }
+        .btn-primary svg { width: 15px; height: 15px; }
+
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            height: 44px;
+            padding: 0 18px;
+            border-radius: 999px;
+            background: var(--ghost-bg);
+            border: 1px solid var(--line-strong);
+            color: var(--text);
+            font-size: 12.5px;
+            font-weight: 600;
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease);
+        }
+        .btn-ghost:hover { background: var(--ghost-hover); border-color: var(--accent); }
+
+        .btn-accent {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 44px;
+            padding: 0 18px;
+            border-radius: 12px;
+            background: var(--accent);
+            color: var(--accent-ink);
+            font-size: 12.5px;
+            font-weight: 700;
+            transition: filter 0.2s var(--ease), transform 0.2s var(--ease);
+        }
+        .btn-accent:hover { filter: brightness(1.06); }
+        .btn-accent:active { transform: scale(0.99); }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-2);
+            background: transparent;
+            transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+            flex: none;
+        }
+        .icon-btn:hover { background: var(--hover); color: var(--text); }
+        .icon-btn svg { width: 17px; height: 17px; }
+
+        /* ============================================================
+           Entrance
+           ============================================================ */
+        @keyframes heroIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-copy {
+            animation: heroIn 0.8s var(--ease) both;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
+        }
+
+        /* ============================================================
+           Header
+           ============================================================ */
+        #site-header {
+            transition: padding 0.3s var(--ease);
+        }
+        #site-header::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: -28px;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0;
+            background: linear-gradient(to bottom, var(--bg) 0, var(--bg) 26px, color-mix(in srgb, var(--bg) 70%, transparent) 56%, transparent 100%);
+            transition: opacity 0.3s var(--ease);
+        }
+        #site-header.is-scrolled::before { opacity: 1; }
+
+        .nav-shell {
+            background: var(--glass);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            -webkit-backdrop-filter: blur(22px) saturate(160%);
+            backdrop-filter: blur(22px) saturate(160%);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 24px 60px -34px rgba(0, 0, 0, 0.9);
+            transition: background-color 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+        }
+
+        #site-header.is-scrolled { padding-top: 8px; }
+        #site-header.is-scrolled .nav-shell {
+            background: var(--glass-strong);
+            border-color: var(--line-strong);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 24px 60px -30px rgba(0, 0, 0, 0.95);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: baseline;
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -0.045em;
+            line-height: 1;
+            color: var(--text);
+            transition: opacity 0.2s var(--ease);
+        }
+        .brand:hover { opacity: 0.82; }
+        .brand .dot {
+            color: var(--accent);
+            text-shadow: 0 0 16px var(--accent-soft);
+        }
+        .brand .tv {
+            color: var(--text-2);
+            font-weight: 500;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 11px;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-2);
+            font-size: 12.5px;
+            font-weight: 500;
+            letter-spacing: 0.005em;
+            line-height: 1;
+            white-space: nowrap;
+            transition: color 0.2s var(--ease), background-color 0.2s var(--ease);
+        }
+        .nav-link:hover { color: var(--text); background: var(--hover); }
+        header .nav-link { font-weight: 500; filter: none; }
+        header .nav-link.text-indigo-400 { color: var(--accent-text); }
+        header a.nav-link.text-indigo-400::after {
+            content: "";
+            width: 4px;
+            height: 4px;
+            border-radius: 999px;
+            background: var(--accent);
+        }
+
+        .menu { position: relative; }
+
+        .menu-chevron {
+            width: 11px;
+            height: 11px;
+            opacity: 0.55;
+            transition: transform 0.22s var(--ease), opacity 0.2s var(--ease);
+        }
+        .menu.is-open .menu-chevron { transform: rotate(180deg); opacity: 1; }
+
+        .menu-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            z-index: 70;
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid var(--line-strong);
+            background: var(--glass-strong);
+            -webkit-backdrop-filter: blur(26px) saturate(170%);
+            backdrop-filter: blur(26px) saturate(170%);
+            box-shadow: var(--shadow);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(6px);
+            transition: opacity 0.18s var(--ease), transform 0.18s var(--ease), visibility 0.18s;
+        }
+        .menu.is-open > .menu-panel {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 9px 10px;
+            border-radius: 9px;
+            color: var(--text-2);
+            font-size: 12.5px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
+        }
+        .menu-item:hover { background: var(--hover); color: var(--text); }
+        .menu-item .menu-meta {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 9.5px;
+            letter-spacing: 0.04em;
+            color: var(--text-3);
+        }
+
+        .alpha-panel { padding: 12px; }
+        #alpha-index {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 4px;
+        }
+        #alpha-index a {
+            width: auto;
+            height: 31px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-2);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 11px;
+            font-weight: 500;
+            transition: background-color 0.16s var(--ease), color 0.16s var(--ease), border-color 0.16s var(--ease);
+        }
+        #alpha-index a:hover {
+            background: var(--surface-2);
+            border-color: var(--line-strong);
+            color: var(--text);
+        }
+
+        /* Search + filters */
+        .search-shell {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            height: 42px;
+            padding: 0 5px 0 8px;
+            border-radius: 12px;
+            background: var(--field-bg);
+            border: 1px solid var(--line);
+            transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+        }
+        .search-shell:focus-within {
+            border-color: var(--line-strong);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+        #search-input {
+            flex: 1 1 auto;
+            min-width: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: transparent;
+            color: var(--text);
+            font-size: 12.5px;
+            font-weight: 500;
+            outline: none;
+        }
+        #search-input::placeholder { color: var(--text-3); }
+
+        .filter-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            height: 32px;
+            padding: 0 8px;
+            border-radius: 8px;
+            color: var(--text-2);
+            font-size: 11.5px;
+            font-weight: 600;
+            transition: background-color 0.16s var(--ease), color 0.16s var(--ease);
+        }
+        .filter-trigger:hover { background: var(--hover); color: var(--text); }
+        .filter-trigger svg { width: 15px; height: 15px; }
+
+        .filter-panel {
+            width: min(92vw, 336px);
+            padding: 12px;
+        }
+
+        .field-select,
+        .field {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background-color: var(--field-bg);
+            color: var(--text);
+            font-size: 12.5px;
+            font-weight: 500;
+            outline: none;
+            transition: border-color 0.18s var(--ease), background-color 0.18s var(--ease);
+        }
+        .field-select {
+            height: 40px;
+            padding: 0 30px 0 11px;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23807c78' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 9px center;
+            background-size: 13px;
+            cursor: pointer;
+        }
+        .field-select:focus,
+        .field:focus { border-color: var(--line-strong); background-color: var(--surface); }
+        .field::placeholder { color: var(--text-3); }
+        .field { height: 46px; padding: 0 14px; }
+        textarea.field { height: auto; padding: 13px 14px; resize: none; }
+
+        /* Theme icon drawn in CSS so the toggle stays an icon after script.js swaps the glyph */
+        #theme-icon {
+            display: block;
+            width: 18px;
+            height: 18px;
+            font-size: 0;
+            background-color: var(--text-2);
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'/%3E%3C/svg%3E");
+            -webkit-mask-size: 18px 18px;
+            mask-size: 18px 18px;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+        }
+        body.light-mode #theme-icon {
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z'/%3E%3C/svg%3E");
+        }
+        .theme-btn { border: 1px solid var(--line); }
+
+        /* Mobile menu */
+        .mobile-menu {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(100% + 8px);
+            z-index: 60;
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid var(--line-strong);
+            background: var(--glass-strong);
+            -webkit-backdrop-filter: blur(26px) saturate(170%);
+            backdrop-filter: blur(26px) saturate(170%);
+            box-shadow: var(--shadow);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-6px);
+            transition: opacity 0.2s var(--ease), transform 0.2s var(--ease), visibility 0.2s;
+        }
+        .mobile-menu.is-open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .mobile-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 10px;
+            border-radius: 9px;
+            color: var(--text-2);
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
+        }
+        .mobile-link:hover { background: var(--hover); color: var(--text); }
+        .mobile-link .ordinal { font-size: 10px; }
+
+        /* ============================================================
+           Spotlight
+           ============================================================ */
+        #hero-banner {
+            height: clamp(640px, 100svh, 980px);
+            background-color: var(--bg-elev);
+            isolation: isolate;
+        }
+
+        .hero-veil {
+            background-image:
+                linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 88%, transparent) 30%, color-mix(in srgb, var(--bg) 16%, transparent) 64%, color-mix(in srgb, var(--bg) 52%, transparent) 100%),
+                linear-gradient(0deg, var(--bg) 2%, color-mix(in srgb, var(--bg) 70%, transparent) 26%, transparent 62%),
+                linear-gradient(180deg, rgba(5, 5, 7, 0.5) 0%, transparent 26%);
+        }
+
+        .hero-vignette {
+            background: radial-gradient(115% 85% at 72% 32%, transparent 38%, rgba(0, 0, 0, 0.42) 100%);
+        }
+
+        #hero-title {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: clamp(40px, 6vw, 84px);
+            font-weight: 600;
+            line-height: 0.98;
+            letter-spacing: -0.045em;
+            color: var(--hero-text) !important;
+            max-width: 17ch;
+            text-wrap: balance;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-shadow: 0 2px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        #hero-desc {
+            color: color-mix(in srgb, var(--hero-text) 78%, transparent);
+            font-size: 15px;
+            line-height: 1.65;
+            max-width: 56ch;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        @media (max-width: 640px) {
+            #hero-desc { -webkit-line-clamp: 2; font-size: 13.5px; }
+        }
+
+        #spotlight-rank {
+            display: flex;
+            align-items: baseline;
+            gap: 11px;
+            min-height: 34px;
+        }
+        #spotlight-rank > span:first-child {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: clamp(28px, 3vw, 38px);
+            font-weight: 500;
+            line-height: 1;
+            letter-spacing: -0.05em;
+            color: var(--hero-text);
+            font-variant-numeric: tabular-nums;
+        }
+        #spotlight-rank > span:last-child {
+            padding: 0 !important;
+            font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: none;
+            font-size: 0;
+            color: var(--accent-text);
+        }
+        #spotlight-rank > span:last-child::after {
+            content: "Spotlight";
+            font-size: 10.5px;
+            letter-spacing: 0.06em;
+            text-transform: none;
+        }
+
+        #spotlight-controls > div {
+            width: 62px;
+            height: 86px;
+            border-radius: 12px;
+            border: 1px solid var(--line-strong);
+            opacity: 0.55;
+            filter: saturate(0.65);
+            transform: translateY(0) scale(1);
+            transition: opacity 0.28s var(--ease), transform 0.28s var(--ease), border-color 0.28s var(--ease), filter 0.28s var(--ease), box-shadow 0.28s var(--ease);
+        }
+        #spotlight-controls > div:hover {
+            opacity: 1;
+            filter: none;
+            transform: translateY(-4px) scale(1.01);
+            border-color: var(--line-strong);
+        }
+        #spotlight-controls > div[class*="border-indigo-500"] {
+            opacity: 1;
+            filter: none;
+            border: 2px solid var(--accent);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 0 0 1px var(--accent-soft), 0 18px 40px -20px var(--accent);
+        }
+        #spotlight-controls > div span {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 19px;
+            font-weight: 500;
+            letter-spacing: -0.04em;
+            color: #fff;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+        }
+        #spotlight-controls > div > div:first-child {
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.68), rgba(0, 0, 0, 0.1));
+        }
+
+        #spotlight-controls-mobile { min-height: 8px; }
+        #spotlight-controls-mobile > div {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.32);
+            cursor: pointer;
+            transition: width 0.28s var(--ease), background-color 0.28s var(--ease);
+        }
+        #spotlight-controls-mobile > div[class*="bg-indigo-500"] {
+            width: 24px;
+            background: var(--accent);
+        }
+
+        .gate {
+            height: 8px;
+            opacity: 0.22;
+            background-image: repeating-linear-gradient(90deg, var(--line-strong) 0 1px, transparent 1px 24px);
+            -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+        }
+
+        /* ============================================================
+           Continue watching
+           ============================================================ */
+        #cw-grid {
+            scroll-snap-type: x mandatory;
+            scroll-padding-left: 2px;
+        }
+        @media (min-width: 768px) {
+            #cw-grid {
+                -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 56px), transparent 100%);
+                mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 56px), transparent 100%);
+            }
+        }
+        #cw-grid > div {
+            flex: 0 0 auto;
+            width: 296px;
+            scroll-snap-align: start;
+            border-radius: 15px;
+            overflow: hidden;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            transition: transform 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+        }
+        #cw-grid > div:hover,
+        #cw-grid > div:focus-visible {
+            transform: translateY(-3px);
+            border-color: var(--line-strong);
+            box-shadow: 0 20px 44px -26px rgba(0, 0, 0, 0.9);
+        }
+        #cw-grid > div img {
+            transition: transform 0.6s var(--ease), filter 0.4s var(--ease);
+        }
+        #cw-grid > div:hover img { transform: scale(1.05); filter: brightness(0.92); }
+        #cw-grid > div > div:last-child {
+            background: var(--surface);
+            padding: 12px 14px 13px;
+        }
+        #cw-grid > div > div:last-child h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+        #cw-grid > div > div:last-child p {
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 10px;
+            letter-spacing: 0.01em;
+            color: var(--text-3);
+        }
+        #cw-grid .h-1 {
+            height: 3px !important;
+            background: rgba(255, 255, 255, 0.18) !important;
+        }
+        #cw-grid .h-1 > div {
+            background: var(--accent) !important;
+            box-shadow: 0 0 12px var(--accent-soft);
+        }
+
+        /* ============================================================
+           Catalog cards (markup is rendered by script.js)
+           ============================================================ */
+        #anime-grid > p {
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            text-transform: none;
+            color: var(--text-3);
+        }
+
+        #anime-grid > div {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            transform: translateY(0);
+            transition: transform 0.32s var(--ease), border-color 0.32s var(--ease), box-shadow 0.32s var(--ease);
+        }
+        #anime-grid > div:hover,
+        #anime-grid > div:focus-visible {
+            transform: translateY(-4px);
+            border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+            box-shadow: 0 20px 46px -26px rgba(0, 0, 0, 0.95), 0 0 34px -22px var(--accent);
+        }
+        #anime-grid > div > img {
+            transition: transform 0.65s var(--ease), filter 0.4s var(--ease);
+        }
+        #anime-grid > div:hover > img,
+        #anime-grid > div:focus-visible > img {
+            transform: scale(1.045);
+            filter: brightness(0.82) saturate(1.05);
+        }
+
+        #anime-grid > div > div:nth-child(2) {
+            background: linear-gradient(to top, rgba(4, 4, 7, 0.96) 0%, rgba(4, 4, 7, 0.56) 34%, transparent 68%);
+            padding: 36px 13px 13px;
+            transition: opacity 0.25s var(--ease);
+        }
+        #anime-grid > div > div:nth-child(2) h3 {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+            color: #fff;
+        }
+        #anime-grid > div > div:nth-child(2) p {
+            margin-top: 5px;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 9.5px;
+            letter-spacing: 0.02em;
+            color: rgba(255, 255, 255, 0.62);
+        }
+
+        #anime-grid > div > div:last-child {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 14px 13px;
+            background: linear-gradient(to top, rgba(4, 4, 7, 0.98) 10%, rgba(4, 4, 7, 0.93) 54%, rgba(4, 4, 7, 0.74) 100%);
+            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+        }
+        #anime-grid > div:hover > div:last-child,
+        #anime-grid > div:focus-visible > div:last-child,
+        #anime-grid > div:focus-within > div:last-child {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #anime-grid > div > div:last-child h3 {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.015em;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        #anime-grid > div > div:last-child p:first-of-type {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            margin-bottom: 8px;
+            padding: 4px 7px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff !important;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            text-transform: none;
+            line-height: 1.2;
+        }
+        #anime-grid > div > div:last-child p:last-of-type {
+            color: rgba(255, 255, 255, 0.66) !important;
+            font-size: 11px;
+            line-height: 1.55;
+            margin-bottom: 11px;
+        }
+        #anime-grid > div > div:last-child > div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 9px;
+            background: var(--btn-bg);
+            color: var(--btn-fg) !important;
+            font-size: 0;
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none;
+            transition: background-color 0.2s var(--ease);
+        }
+        #anime-grid > div > div:last-child > div::before {
+            content: "";
+            width: 0;
+            height: 0;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+            border-left: 6px solid currentColor;
+        }
+        #anime-grid > div > div:last-child > div::after {
+            content: "Play";
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+        #anime-grid > div > div:last-child > div:hover { background: var(--btn-bg-hover); }
+
+        /* ============================================================
+           Bento columns
+           ============================================================ */
+        .bento-panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+        }
+        @media (min-width: 768px) {
+            .bento-panel { padding: 18px; }
+        }
+
+        #col-airing > div,
+        #col-upcoming > div,
+        #col-popular > div {
+            border-radius: 13px;
+            transition: border-color 0.25s var(--ease), background-color 0.25s var(--ease), transform 0.25s var(--ease);
+        }
+        #col-airing > div:first-child,
+        #col-upcoming > div:first-child,
+        #col-popular > div:first-child {
+            border: 1px solid var(--line);
+        }
+        #col-airing > div:first-child:hover,
+        #col-upcoming > div:first-child:hover,
+        #col-popular > div:first-child:hover {
+            border-color: var(--line-strong);
+            transform: translateY(-2px);
+        }
+        #col-airing > div:first-child img,
+        #col-upcoming > div:first-child img,
+        #col-popular > div:first-child img {
+            transition: transform 0.55s var(--ease), filter 0.35s var(--ease);
+        }
+        #col-airing > div:first-child:hover img,
+        #col-upcoming > div:first-child:hover img,
+        #col-popular > div:first-child:hover img {
+            transform: scale(1.04);
+            filter: brightness(0.9);
+        }
+        #col-airing > div:first-child > div > div:nth-child(2),
+        #col-upcoming > div:first-child > div > div:nth-child(2),
+        #col-popular > div:first-child > div > div:nth-child(2) {
+            background: linear-gradient(to top, rgba(5, 5, 7, 0.96) 0%, rgba(5, 5, 7, 0.5) 46%, transparent 82%);
+        }
+        #col-airing > div:first-child h4,
+        #col-upcoming > div:first-child h4,
+        #col-popular > div:first-child h4 {
+            font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: #fff;
+        }
+        #col-airing > div:first-child .text-indigo-400,
+        #col-upcoming > div:first-child .text-indigo-400,
+        #col-popular > div:first-child .text-indigo-400 {
+            color: var(--accent-text) !important;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 9px !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.04em !important;
+            text-transform: none !important;
+        }
+
+        #col-airing > div:not(:first-child),
+        #col-upcoming > div:not(:first-child),
+        #col-popular > div:not(:first-child) {
+            padding: 7px;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+        #col-airing > div:not(:first-child):hover,
+        #col-upcoming > div:not(:first-child):hover,
+        #col-popular > div:not(:first-child):hover {
+            background: var(--surface-2);
+            border-color: var(--line);
+        }
+        #col-airing > div:not(:first-child) > div:first-child,
+        #col-upcoming > div:not(:first-child) > div:first-child,
+        #col-popular > div:not(:first-child) > div:first-child {
+            width: 52px;
+            height: 72px;
+            border-radius: 8px;
+        }
+        #col-airing > div:not(:first-child) h4,
+        #col-upcoming > div:not(:first-child) h4,
+        #col-popular > div:not(:first-child) h4 {
+            font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+            font-size: 12.5px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--text);
+        }
+        #col-airing > div:not(:first-child) .flex-1 > div > span:first-child,
+        #col-upcoming > div:not(:first-child) .flex-1 > div > span:first-child,
+        #col-popular > div:not(:first-child) .flex-1 > div > span:first-child {
+            background: var(--accent-soft) !important;
+            border-color: transparent !important;
+            color: var(--accent-text) !important;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 8.5px;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        #col-airing > div:not(:first-child) .flex-1 > div > span:last-child,
+        #col-upcoming > div:not(:first-child) .flex-1 > div > span:last-child,
+        #col-popular > div:not(:first-child) .flex-1 > div > span:last-child {
+            color: var(--text-3);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 9px;
+            font-weight: 400;
+        }
+        #col-airing > div:not(:first-child) > div:last-child,
+        #col-upcoming > div:not(:first-child) > div:last-child,
+        #col-popular > div:not(:first-child) > div:last-child {
+            display: none;
+        }
+        #col-airing:empty,
+        #col-upcoming:empty,
+        #col-popular:empty {
+            min-height: 380px;
+        }
+        #col-airing:empty::after,
+        #col-upcoming:empty::after,
+        #col-popular:empty::after {
+            content: "Loading titles";
+            display: block;
+            padding: 12px 4px;
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 10.5px;
+            color: var(--text-3);
+        }
+
+        /* ============================================================
+           Pagination
+           ============================================================ */
+        #pagination-container { gap: 6px; }
+        #pagination-container button {
+            width: 38px;
+            height: 38px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--text-2);
+            font-family: 'JetBrains Mono', ui-monospace, monospace;
+            font-size: 11.5px;
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+            transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
+        }
+        #pagination-container button:hover {
+            border-color: var(--line-strong);
+            background: var(--hover);
+            color: var(--text);
+        }
+        #pagination-container button[class*="F05A3F"] {
+            background: var(--accent) !important;
+            border-color: var(--accent) !important;
+            color: var(--accent-ink) !important;
+            font-weight: 700;
+            box-shadow: 0 10px 26px -14px var(--accent);
+        }
+
+        /* ============================================================
+           Footer
+           ============================================================ */
+        .site-footer {
+            background: var(--bg-elev);
+            border-top: 1px solid var(--line);
+        }
+        .footer-heading {
+            font-size: 11.5px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            color: var(--text-2);
+            margin-bottom: 10px;
+        }
+        .footer-link {
+            display: block;
+            padding: 5px 0;
+            color: var(--text-3);
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: color 0.18s var(--ease);
+        }
+        .footer-link:hover { color: var(--text); }
+
+        /* ============================================================
+           Dialog
+           ============================================================ */
+        .dialog {
+            background: var(--dialog);
+            border: 1px solid var(--line-strong);
+            border-radius: 24px;
+            -webkit-backdrop-filter: blur(28px) saturate(170%);
+            backdrop-filter: blur(28px) saturate(170%);
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+        }
+        .dialog::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.7;
+        }
+        .dialog-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-text);
+            background: var(--accent-soft);
+            border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+        }
+
+        /* ============================================================
+           Light mode repairs for markup owned by script.js / style.css
+           ============================================================ */
+        body.light-mode.page {
+            background-color: var(--bg) !important;
+            color: var(--text) !important;
+        }
+        body.light-mode #site-header {
+            background: transparent !important;
+            border-color: transparent !important;
+        }
+        body.light-mode .site-footer {
+            background: var(--bg-elev) !important;
+            border-color: var(--line) !important;
+        }
+        body.light-mode #hero-banner {
+            background-color: var(--bg-elev) !important;
+        }
+        body.light-mode .hero-veil {
+            background-image:
+                linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 90%, transparent) 30%, color-mix(in srgb, var(--bg) 22%, transparent) 64%, color-mix(in srgb, var(--bg) 58%, transparent) 100%),
+                linear-gradient(0deg, var(--bg) 2%, color-mix(in srgb, var(--bg) 76%, transparent) 28%, transparent 66%),
+                linear-gradient(180deg, rgba(243, 241, 236, 0.55) 0%, transparent 26%);
+        }
+        body.light-mode .hero-vignette { background: none; }
+        body.light-mode #hero-desc { color: var(--text-2); }
+        body.light-mode #hero-title { text-shadow: none; }
+        body.light-mode #anime-grid [class*="text-white"],
+        body.light-mode #spotlight-controls [class*="text-white"],
+        body.light-mode #col-airing > div:first-child h4,
+        body.light-mode #col-upcoming > div:first-child h4,
+        body.light-mode #col-popular > div:first-child h4 {
+            color: #fff !important;
+        }
+        body.light-mode #anime-grid > div > div:last-child p:last-of-type {
+            color: rgba(255, 255, 255, 0.72) !important;
+        }
+        body.light-mode #anime-grid > div > div:last-child > div {
+            background: #f2efea;
+            color: #0a0a0c !important;
+        }
+        body.light-mode #col-airing > div:not(:first-child) h4,
+        body.light-mode #col-upcoming > div:not(:first-child) h4,
+        body.light-mode #col-popular > div:not(:first-child) h4 {
+            color: var(--text) !important;
+        }
+        body.light-mode #anime-grid > div,
+        body.light-mode #cw-grid > div,
+        body.light-mode .bento-panel {
+            background-color: var(--surface) !important;
+            border-color: var(--line) !important;
+        }
+        body.light-mode #bug-modal-content {
+            background: var(--dialog) !important;
+            border-color: var(--line-strong) !important;
+        }
+        body.light-mode .field,
+        body.light-mode .field-select {
+            background-color: var(--field-bg) !important;
+            color: var(--text) !important;
+            border-color: var(--line) !important;
+        }
+        body.light-mode #alpha-index a {
+            background: transparent !important;
+            border-color: transparent !important;
+            color: var(--text-2) !important;
+        }
+        body.light-mode #alpha-index a:hover {
+            background: var(--surface-2) !important;
+            color: var(--text) !important;
+        }
+
+        /* ============================================================
+           Responsive details
+           ============================================================ */
+        @media (max-width: 767px) {
+            #site-header { padding-left: 12px; padding-right: 12px; }
+            .nav-shell { border-radius: 16px; }
+            #spotlight-controls-mobile { bottom: 16px; right: 16px; }
+            #hero-banner { min-height: 620px; }
+            .bento-panel { border-radius: 18px; }
+        }
+
+        @media (max-width: 420px) {
+            #cw-grid > div { width: 264px; }
+            #pagination-container button { width: 36px; height: 36px; }
+        }
     </style>
 </head>
-<body class="bg-[#09090b] text-zinc-100 font-sans min-h-screen selection:bg-indigo-500 selection:text-white overflow-x-hidden flex flex-col">
+<body class="page font-sans min-h-screen flex flex-col antialiased">
+    <a href="#catalog" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-xl focus:bg-[var(--btn-bg)] focus:px-4 focus:py-2 focus:text-[13px] focus:font-semibold focus:text-[var(--btn-fg)]">Skip to catalog</a>
 
-    <header class="w-full bg-[#09090b]/90 backdrop-blur-md border-b border-zinc-900 sticky top-0 z-50 px-6 py-4 shrink-0">
-        <div class="max-w-[1400px] mx-auto flex flex-wrap xl:flex-nowrap items-center justify-between gap-6">
-            <div class="flex items-center gap-10">
-                <span class="text-3xl font-black tracking-tight text-white cursor-pointer" onclick="window.location.href='index.html'">Anime<span class="text-indigo-500">.TV</span></span>
-                
-                <nav class="hidden lg:flex items-center gap-8 text-[13px] font-bold tracking-widest text-zinc-400">
-                    <a href="genres.html" class="nav-link hover:text-white transition uppercase">Genres</a>
-                    
-                    <div class="relative group z-50 flex items-center">
-                        <button class="nav-link hover:text-white flex items-center gap-1.5 py-2 transition uppercase">TYPES <span class="text-[10px]">▼</span></button>
-                        <div class="absolute top-full left-0 pt-4 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-2xl p-2 flex flex-col gap-1">
-                                <a href="home.html?type=tv" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">TV Series</a>
-                                <a href="home.html?type=movie" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">Movies</a>
-                                <a href="home.html?type=ova" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">OVAs</a>
-                                <a href="home.html?type=special" class="px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition text-xs font-bold uppercase tracking-wider">Specials</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <a href="home.html?view=new" class="nav-link hover:text-white transition uppercase">New Releases</a>
-                    <a href="history.html" class="nav-link hover:text-white transition uppercase">History</a>
-                    <a href="home.html?view=ongoing" class="nav-link hover:text-white transition uppercase">Ongoing</a>
-                    
-                    <div class="relative group z-50 flex items-center">
-                        <button class="nav-link hover:text-white flex items-center gap-1.5 py-2 transition uppercase">A-Z List <span class="text-[10px]">▼</span></button>
-                        <div class="absolute top-full left-0 pt-4 w-80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <div class="bg-[#09090b] border border-zinc-800 rounded-xl shadow-2xl p-4">
-                                <div id="alpha-index" class="flex flex-wrap gap-1.5"></div>
-                            </div> 
-                        </div>
-                    </div>
+    <header id="site-header" class="fixed inset-x-0 top-0 z-50 px-4 pt-3 md:px-6 md:pt-4">
+        <div class="relative mx-auto w-full max-w-shell">
+            <div class="nav-shell flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-[18px] px-3 py-2.5 md:px-4 md:py-2.5">
+                <a href="home.html" class="brand shrink-0 py-1" aria-label="Anime.TV home">Anime<span class="dot">.</span><span class="tv">TV</span></a>
 
-                    <button id="theme-toggle" class="text-xl hover:scale-110 transition-transform focus:outline-none flex items-center justify-center cursor-pointer z-50 relative ml-2" title="Toggle Theme">
-                        <span id="theme-icon">☀️</span>
-                    </button>
-                </nav>
-            </div>
-            
-            <div class="flex w-full xl:w-auto items-center justify-end">
-                <div class="flex items-center bg-[#151518] border border-zinc-800 hover:border-zinc-700 transition rounded-full px-4 py-2 w-full sm:w-[400px] shadow-lg focus-within:ring-2 focus-within:ring-indigo-500/50">
-                    <button id="search-btn" class="text-white pr-3 hover:text-indigo-400 transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </button>
-                    <input type="text" id="search-input" placeholder="Search anime" class="flex-1 bg-transparent text-sm text-white focus:outline-none placeholder-zinc-500 w-full font-medium tracking-wide">
-                    
-                    <div class="relative group z-50 flex items-center pl-3 border-l border-zinc-700 ml-2 h-6">
-                        <button class="flex items-center gap-1.5 text-white font-bold text-sm tracking-wide hover:text-indigo-400 transition uppercase">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 4a1 1 0 011-1h16a1 1 0 01.74 1.673l-7.116 8.041A2 2 0 0013 14.228V20a1 1 0 01-1.447.894l-4-2A1 1 0 017 18v-3.772a2 2 0 00-.624-1.486L3.26 5.673A1 1 0 013 4z"/></svg>
-                            FILTER
+                <nav aria-label="Primary" class="hidden xl:flex items-center gap-0.5">
+                    <a href="home.html" class="nav-link">Home</a>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-genres">
+                            Genres
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
                         </button>
-                        <div class="absolute top-full right-0 pt-6 w-64 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                            <div class="bg-[#151518] border border-zinc-800 rounded-xl shadow-2xl p-4 flex flex-col gap-3 cursor-default" onclick="event.preventDefault();">
-                                <p class="text-xs font-black text-zinc-500 uppercase tracking-widest border-b border-zinc-800 pb-2">Advanced Filters</p>
-                                <select id="filter-type" class="w-full bg-zinc-900 border border-zinc-800 text-xs font-bold rounded-lg px-3 py-2.5 text-zinc-300 focus:outline-none cursor-pointer">
-                                    <option value="">Any Type</option><option value="tv">TV</option><option value="movie">Movie</option><option value="ova">OVA</option>
-                                </select>
-                                <select id="filter-genre" class="w-full bg-zinc-900 border border-zinc-800 text-xs font-bold rounded-lg px-3 py-2.5 text-zinc-300 focus:outline-none cursor-pointer">
-                                    <option value="">Any Genre</option><option value="1">Action</option><option value="2">Adventure</option><option value="4">Comedy</option><option value="8">Drama</option><option value="10">Fantasy</option><option value="22">Romance</option><option value="24">Sci-Fi</option>
-                                </select>
-                                <select id="filter-status" class="w-full bg-zinc-900 border border-zinc-800 text-xs font-bold rounded-lg px-3 py-2.5 text-zinc-300 focus:outline-none cursor-pointer">
-                                    <option value="">Any Status</option><option value="airing">Airing</option><option value="complete">Complete</option><option value="upcoming">Upcoming</option>
-                                </select>
-                                <select id="filter-sort" class="w-full bg-zinc-900 border border-zinc-800 text-xs font-bold rounded-lg px-3 py-2.5 text-zinc-300 focus:outline-none cursor-pointer">
-                                    <option value="">Sort By</option><option value="score">Top Scored</option><option value="popularity">Most Popular</option>
-                                </select>
-                                <button id="apply-filters-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 text-xs font-bold rounded-lg transition mt-2">
-                                    Apply Filters
-                                </button>
+                        <div id="menu-genres" class="menu-panel w-56" data-menu>
+                            <a class="menu-item" href="genres.html">All genres</a>
+                            <a class="menu-item" href="home.html?genre_id=1">Action</a>
+                            <a class="menu-item" href="home.html?genre_id=2">Adventure</a>
+                            <a class="menu-item" href="home.html?genre_id=4">Comedy</a>
+                            <a class="menu-item" href="home.html?genre_id=8">Drama</a>
+                            <a class="menu-item" href="home.html?genre_id=10">Fantasy</a>
+                            <a class="menu-item" href="home.html?genre_id=22">Romance</a>
+                            <a class="menu-item" href="home.html?genre_id=24">Sci-fi</a>
+                            <a class="menu-item" href="home.html?genre_id=37">Supernatural</a>
+                        </div>
+                    </div>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-types">
+                            Types
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-types" class="menu-panel w-52" data-menu>
+                            <a class="menu-item" href="home.html?type=tv">TV series <span class="menu-meta">TV</span></a>
+                            <a class="menu-item" href="home.html?type=movie">Movies <span class="menu-meta">MV</span></a>
+                            <a class="menu-item" href="home.html?type=ova">OVAs <span class="menu-meta">OVA</span></a>
+                            <a class="menu-item" href="home.html?type=special">Specials <span class="menu-meta">SP</span></a>
+                            <a class="menu-item" href="home.html?type=ona">ONAs <span class="menu-meta">ONA</span></a>
+                        </div>
+                    </div>
+
+                    <div class="menu relative" data-menu-root>
+                        <button type="button" class="nav-link" data-menu-button aria-expanded="false" aria-controls="menu-alpha">
+                            A-Z
+                            <svg class="menu-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div id="menu-alpha" class="menu-panel alpha-panel w-[336px]" data-menu>
+                            <div id="alpha-index" class="grid grid-cols-7 gap-1"></div>
+                        </div>
+                    </div>
+
+                    <a href="history.html" class="nav-link">History</a>
+                </nav>
+
+                <div class="order-3 flex w-full min-w-0 items-center gap-2 md:order-none md:ml-auto md:w-auto md:flex-none">
+                    <div class="search-shell flex-1 md:w-[300px] lg:w-[350px] md:flex-none">
+                        <button id="search-btn" type="button" class="icon-btn" aria-label="Search" style="width:32px;height:32px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+                        </button>
+                        <input id="search-input" type="text" placeholder="Search anime" autocomplete="off" spellcheck="false" aria-label="Search anime">
+
+                        <div class="menu relative" data-menu-root>
+                            <button type="button" class="filter-trigger" data-menu-button aria-expanded="false" aria-controls="filter-panel" aria-label="Open filters">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+                                <span class="hidden sm:inline">Filters</span>
+                            </button>
+                            <div id="filter-panel" class="menu-panel filter-panel left-auto right-0 p-3" data-menu>
+                                <p class="px-1 pb-2 text-[12px] font-semibold text-[var(--text)]">Filters</p>
+                                <div class="grid gap-2">
+                                    <select id="filter-type" class="field-select" aria-label="Type">
+                                        <option value="">Any type</option>
+                                        <option value="tv">TV</option>
+                                        <option value="movie">Movie</option>
+                                        <option value="ova">OVA</option>
+                                        <option value="special">Special</option>
+                                    </select>
+                                    <select id="filter-genre" class="field-select" aria-label="Genre">
+                                        <option value="">Any genre</option>
+                                        <option value="1">Action</option>
+                                        <option value="2">Adventure</option>
+                                        <option value="4">Comedy</option>
+                                        <option value="8">Drama</option>
+                                        <option value="10">Fantasy</option>
+                                        <option value="22">Romance</option>
+                                        <option value="24">Sci-Fi</option>
+                                    </select>
+                                    <select id="filter-status" class="field-select" aria-label="Status">
+                                        <option value="">Any status</option>
+                                        <option value="airing">Airing</option>
+                                        <option value="complete">Complete</option>
+                                        <option value="upcoming">Upcoming</option>
+                                    </select>
+                                    <select id="filter-sort" class="field-select" aria-label="Sort">
+                                        <option value="">Sort by</option>
+                                        <option value="score">Top scored</option>
+                                        <option value="popularity">Most popular</option>
+                                    </select>
+                                </div>
+                                <button id="apply-filters-btn" type="button" class="btn-accent mt-2.5 w-full">Apply filters</button>
                             </div>
                         </div>
                     </div>
+
+                    <button id="theme-toggle" type="button" class="icon-btn theme-btn" title="Toggle theme" aria-label="Toggle theme">
+                        <span id="theme-icon" aria-hidden="true"></span>
+                    </button>
+
+                    <button id="mobile-menu-btn" type="button" class="icon-btn border border-[var(--line)] xl:hidden" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+                        <svg class="menu-open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                        <svg class="menu-close-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="mobile-menu" class="mobile-menu xl:hidden" aria-hidden="true">
+                <nav class="flex flex-col" aria-label="Mobile">
+                    <a href="home.html" class="mobile-link">Home <span class="ordinal">01</span></a>
+                    <a href="genres.html" class="mobile-link">Genres <span class="ordinal">02</span></a>
+                    <a href="home.html?type=tv" class="mobile-link">TV series <span class="ordinal">03</span></a>
+                    <a href="home.html?view=new" class="mobile-link">New releases <span class="ordinal">04</span></a>
+                    <a href="home.html?view=ongoing" class="mobile-link">Ongoing <span class="ordinal">05</span></a>
+                    <a href="history.html" class="mobile-link">History <span class="ordinal">06</span></a>
+                </nav>
+                <div class="mt-1 border-t border-[var(--line)] pt-1">
+                    <a href="home.html?view=upcoming" class="mobile-link">Upcoming <span class="ordinal">07</span></a>
+                    <button type="button" onclick="openBugModal()" class="mobile-link w-full text-left">Report a bug <span class="ordinal">08</span></button>
                 </div>
             </div>
         </div>
     </header>
 
-    <section class="relative w-full h-[85vh] md:h-[95vh] lg:h-screen bg-zinc-900 border-b border-zinc-900 overflow-hidden shrink-0 flex flex-col justify-end transition-all duration-700" id="hero-banner" style="background-size: cover; background-position: center;">
-        <div class="absolute inset-0 bg-gradient-to-t from-[#09090b] via-[#09090b]/70 to-transparent z-0"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-[#09090b] via-[#09090b]/60 to-transparent z-0"></div>
-        
-        <div class="relative z-10 w-full max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-8 pb-12 md:pb-24 pt-32">
-            <div class="flex-1 max-w-3xl w-full">
-                <div class="text-indigo-400 font-black tracking-widest uppercase text-xs mb-3 flex items-center gap-2" id="spotlight-rank">
-                    <span class="text-3xl text-white">#1</span> <span class="pt-1">SPOTLIGHT</span>
+    <section id="hero-banner" class="relative flex w-full flex-col justify-end overflow-hidden border-b border-[var(--line)]" style="background-size: cover; background-position: center 28%;">
+        <div class="hero-veil absolute inset-0 z-0" aria-hidden="true"></div>
+        <div class="hero-vignette absolute inset-0 z-0" aria-hidden="true"></div>
+
+        <div class="relative z-10 mx-auto w-full max-w-shell px-5 pb-11 md:px-8 md:pb-16">
+            <div class="flex flex-col gap-10 xl:flex-row xl:items-end xl:justify-between">
+                <div class="hero-copy max-w-[780px]">
+                    <div id="spotlight-rank" class="mb-4">
+                        <span>#1</span> <span>SPOTLIGHT</span>
+                    </div>
+
+                    <h1 id="hero-title">Loading spotlight</h1>
+
+                    <p id="hero-desc" class="mt-4 md:mt-5">Connecting to the catalog</p>
+
+                    <div class="mt-7 flex flex-wrap items-center gap-3">
+                        <button id="hero-play-btn" type="button" class="btn-primary hidden">
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.4v13.2L19 12z"/></svg>
+                            Watch now
+                        </button>
+                    </div>
                 </div>
-                <h1 id="hero-title" class="text-5xl md:text-6xl lg:text-7xl font-black text-white tracking-tight drop-shadow-2xl line-clamp-2 mb-4">Loading...</h1>
-                <p id="hero-desc" class="text-base text-zinc-300 max-w-2xl line-clamp-3 leading-relaxed hidden md:block mb-8 drop-shadow-md">Syncing premium database records...</p>
-                <div class="flex items-center gap-4">
-                    <button id="hero-play-btn" class="bg-white text-black px-8 py-3.5 rounded-full font-black text-sm hover:scale-105 transition duration-300 flex items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.3)] hidden uppercase tracking-wide">
-                        ▶ Watch Now
-                    </button>
-                    <button class="bg-zinc-800/80 hover:bg-zinc-700 backdrop-blur-md text-white border border-zinc-700 px-6 py-3.5 rounded-full font-bold text-sm transition duration-300 hidden md:block">
-                        + Add to List
-                    </button>
+
+                <div class="hidden shrink-0 flex-col items-end gap-3 xl:flex">
+                    <p class="font-mono text-[10px] font-medium tracking-[0.06em] text-[var(--text-3)]">Top 5 now</p>
+                    <div id="spotlight-controls" class="flex items-end justify-end gap-3"></div>
                 </div>
             </div>
-            <div class="hidden lg:flex gap-4 items-center justify-end z-20 mb-2" id="spotlight-controls"></div>
         </div>
-        <div class="absolute bottom-6 right-6 lg:hidden flex gap-2 z-20" id="spotlight-controls-mobile"></div>
+
+        <div class="gate absolute inset-x-0 bottom-0 z-10" aria-hidden="true"></div>
+        <div id="spotlight-controls-mobile" class="absolute bottom-5 right-5 z-20 flex items-center gap-1.5 xl:hidden"></div>
     </section>
 
-    <main class="max-w-[1400px] mx-auto px-6 py-8 flex-1 w-full">
-        
-        <div id="continue-watching-section" class="mb-12 hidden">
-            <h2 class="text-lg font-black tracking-widest text-zinc-400 uppercase mb-4">Continue Watching</h2>
-            <div id="cw-grid" class="flex overflow-x-auto gap-4 pb-4 hide-scroll"></div>
-        </div>
+    <main id="catalog" class="mx-auto w-full max-w-shell flex-1 px-5 pb-24 pt-12 md:px-8 md:pt-16">
+        <section id="continue-watching-section" class="mb-16 hidden" aria-labelledby="cw-title">
+            <div class="mb-5 flex items-end justify-between gap-4">
+                <h2 id="cw-title" class="section-title">Continue watching</h2>
+                <a href="history.html" class="section-link">
+                    History
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+            </div>
+            <div id="cw-grid" class="hide-scroll flex gap-4 overflow-x-auto pb-2"></div>
+        </section>
 
-        <div class="mb-4">
-            <div class="flex items-center justify-between mb-6 border-b border-zinc-900 pb-4">
-                <h2 id="grid-header" class="text-xl md:text-2xl font-black tracking-tight text-white uppercase">Trending Now</h2>
+        <section aria-labelledby="grid-header">
+            <div class="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-[var(--line)] pb-4">
+                <h2 id="grid-header" class="section-title">Trending now</h2>
+                <p class="hidden font-mono text-[10.5px] font-medium tracking-[0.04em] text-[var(--text-3)] sm:block">Live catalog from MyAnimeList</p>
             </div>
-            <div id="anime-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 md:gap-6">
-                <p class="text-zinc-500 text-sm">Initializing catalog...</p>
-            </div>
-            <div id="pagination-container" class="flex flex-wrap items-center justify-center gap-2 mt-12 mb-6"></div>
-        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-8 border-t border-zinc-900">
-            <div class="space-y-4">
-                <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-                    <h3 class="font-black tracking-wide text-white uppercase flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> New Releases</h3>
-                    <a href="home.html?view=new" class="text-[10px] text-zinc-500 hover:text-white uppercase font-bold tracking-widest transition">View All ↗</a>
-                </div>
-                <div id="col-airing" class="flex flex-col gap-3"></div>
+            <div id="anime-grid" class="grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                <p class="col-span-full py-10 text-center">Loading catalog</p>
             </div>
-            <div class="space-y-4">
-                <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-                    <h3 class="font-black tracking-wide text-white uppercase flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-indigo-500"></span> Upcoming</h3>
-                    <a href="home.html?view=upcoming" class="text-[10px] text-zinc-500 hover:text-white uppercase font-bold tracking-widest transition">View All ↗</a>
-                </div>
-                <div id="col-upcoming" class="flex flex-col gap-3"></div>
+
+            <div id="pagination-container" class="mb-4 mt-10 flex flex-wrap items-center justify-center"></div>
+        </section>
+
+        <section class="mt-16 md:mt-20" aria-label="Season highlights">
+            <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
+                <article class="bento-panel">
+                    <header class="flex items-center justify-between gap-3 border-b border-[var(--line)] pb-3.5">
+                        <div class="flex items-baseline gap-3">
+                            <span class="ordinal">01</span>
+                            <h3 class="text-[14.5px] font-semibold tracking-[-0.015em] text-[var(--text)]">New releases</h3>
+                        </div>
+                        <a href="home.html?view=new" class="section-link">
+                            View all
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </a>
+                    </header>
+                    <div id="col-airing" class="mt-4 flex flex-col gap-2.5"></div>
+                </article>
+
+                <article class="bento-panel">
+                    <header class="flex items-center justify-between gap-3 border-b border-[var(--line)] pb-3.5">
+                        <div class="flex items-baseline gap-3">
+                            <span class="ordinal">02</span>
+                            <h3 class="text-[14.5px] font-semibold tracking-[-0.015em] text-[var(--text)]">Upcoming</h3>
+                        </div>
+                        <a href="home.html?view=upcoming" class="section-link">
+                            View all
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </a>
+                    </header>
+                    <div id="col-upcoming" class="mt-4 flex flex-col gap-2.5"></div>
+                </article>
+
+                <article class="bento-panel">
+                    <header class="flex items-center justify-between gap-3 border-b border-[var(--line)] pb-3.5">
+                        <div class="flex items-baseline gap-3">
+                            <span class="ordinal">03</span>
+                            <h3 class="text-[14.5px] font-semibold tracking-[-0.015em] text-[var(--text)]">Most popular</h3>
+                        </div>
+                        <a href="home.html" class="section-link">
+                            View all
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </a>
+                    </header>
+                    <div id="col-popular" class="mt-4 flex flex-col gap-2.5"></div>
+                </article>
             </div>
-            <div class="space-y-4">
-                <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-                    <h3 class="font-black tracking-wide text-white uppercase flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Most Popular</h3>
-                    <a href="home.html" class="text-[10px] text-zinc-500 hover:text-white uppercase font-bold tracking-widest transition">View All ↗</a>
-                </div>
-                <div id="col-popular" class="flex flex-col gap-3"></div>
-            </div>
-        </div>
+        </section>
     </main>
 
-    <footer class="w-full bg-[#050505] border-t border-zinc-900 pt-16 pb-8 mt-auto">
-        <div class="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between gap-8 md:gap-12">
-            <div class="max-w-xs space-y-4">
-                <span class="text-3xl font-black tracking-tight text-white cursor-pointer" onclick="window.location.href='index.html'">Anime<span class="text-indigo-500">.TV</span></span>
-                <p class="text-xs text-zinc-500 leading-relaxed">Anime.TV does not store any files on our server, we only link to the media which is hosted on 3rd party services.</p>
+    <footer class="site-footer mt-auto">
+        <div class="mx-auto w-full max-w-shell px-5 py-14 md:px-8 md:py-16">
+            <div class="grid gap-10 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-8">
+                <div class="max-w-xs">
+                    <a href="home.html" class="brand" aria-label="Anime.TV home">Anime<span class="dot">.</span><span class="tv">TV</span></a>
+                    <p class="mt-4 text-[12.5px] leading-relaxed text-[var(--text-3)]">
+                        A quieter way to find what to watch next. Anime.TV links to media hosted elsewhere and stores no files.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Navigation</h4>
+                    <a href="home.html" class="footer-link">Home</a>
+                    <a href="genres.html" class="footer-link">Genres</a>
+                    <a href="home.html?type=movie" class="footer-link">Movies</a>
+                    <a href="history.html" class="footer-link">History</a>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Browse</h4>
+                    <a href="home.html?view=new" class="footer-link">New releases</a>
+                    <a href="home.html?view=ongoing" class="footer-link">Ongoing</a>
+                    <a href="home.html?view=upcoming" class="footer-link">Upcoming</a>
+                    <a href="home.html" class="footer-link">Most popular</a>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Support</h4>
+                    <button type="button" onclick="openBugModal()" class="footer-link text-left">Report a bug</button>
+                    <a href="terms.html" class="footer-link">Terms of service</a>
+                    <a href="privacy.html" class="footer-link">Privacy policy</a>
+                </div>
             </div>
-            <div class="flex flex-wrap gap-12 md:gap-24 text-sm">
-                <div class="space-y-3">
-                    <h4 class="font-black text-white tracking-widest uppercase text-xs mb-4">Navigation</h4>
-                    <a href="home.html" class="block text-zinc-400 hover:text-indigo-400 transition">Home</a>
-                    <a href="genres.html" class="block text-zinc-400 hover:text-indigo-400 transition">Genres</a>
-                    <a href="home.html?type=movie" class="block text-zinc-400 hover:text-indigo-400 transition">Movies</a>
-                </div>
-                <div class="space-y-3">
-                    <h4 class="font-black text-white tracking-widest uppercase text-xs mb-4">Quick Links</h4>
-                    <a href="home.html?view=ongoing" class="block text-zinc-400 hover:text-indigo-400 transition">Ongoing</a>
-                    <a href="home.html?view=upcoming" class="block text-zinc-400 hover:text-indigo-400 transition">Upcoming</a>
-                    <a href="home.html?view=shuffle" class="block text-zinc-400 hover:text-indigo-400 transition">Random Anime</a>
-                </div>
-                <div class="space-y-3">
-                    <h4 class="font-black text-white tracking-widest uppercase text-xs mb-4">Support</h4>
-                    <button onclick="openBugModal()" class="block text-zinc-400 hover:text-[#d76145] transition text-left font-medium">Report Bug / Request</button>
-                    <a href="terms.html" class="block text-zinc-400 hover:text-indigo-400 transition">Terms of Service</a>
-                    <a href="privacy.html" class="block text-zinc-400 hover:text-indigo-400 transition">Privacy Policy</a>
-                </div>
+
+            <div class="mt-12 flex flex-col gap-3 border-t border-[var(--line)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p class="font-mono text-[10.5px] tracking-[0.02em] text-[var(--text-3)]">&copy; 2026 Anime.TV</p>
+                <p class="font-mono text-[10.5px] tracking-[0.02em] text-[var(--text-3)]">
+                    Catalog data from
+                    <a href="https://jikan.moe" target="_blank" rel="noopener noreferrer" class="text-[var(--text-2)] transition-colors hover:text-[var(--text)]">Jikan</a>
+                    and
+                    <a href="https://myanimelist.net" target="_blank" rel="noopener noreferrer" class="text-[var(--text-2)] transition-colors hover:text-[var(--text)]">MyAnimeList</a>
+                </p>
             </div>
         </div>
     </footer>
 
-    <div id="bug-modal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeBugModal()"></div>
-        <div class="relative bg-[#1c1d22] w-[90%] max-w-lg rounded-2xl p-6 md:p-8 shadow-2xl border border-zinc-800 transform scale-95 transition-transform duration-300" id="bug-modal-content">
-            <button onclick="closeBugModal()" class="absolute top-5 right-5 text-zinc-500 hover:text-white transition bg-zinc-800/50 hover:bg-zinc-700 p-2 rounded-full">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <div id="bug-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" role="dialog" aria-modal="true" aria-labelledby="bug-modal-title">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-md" onclick="closeBugModal()"></div>
+
+        <div id="bug-modal-content" class="dialog relative w-full max-w-lg transform scale-95 transition-transform duration-300 p-6 md:p-8">
+            <button type="button" onclick="closeBugModal()" class="icon-btn absolute right-4 top-4 border border-[var(--line)] bg-[var(--field-bg)]" aria-label="Close dialog">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
             </button>
-            <h2 class="text-2xl font-bold text-white mb-2 tracking-tight">Send Request</h2>
-            <p class="text-sm text-zinc-400 mb-6 leading-relaxed pr-6">If you can't find your favourite anime in our library, please submit a request. We will try to make it available as soon as possible.</p>
-            
-            <form id="bug-form" action="https://formspree.io/f/mwvznpjo" method="POST" class="space-y-4">
-                <input type="text" name="anime_name" placeholder="Anime name or Bug title" required class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition shadow-inner">
-                <input type="text" name="link" placeholder="Link to MAL/ AL/ anidb or any if possible" class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition shadow-inner">
-                <textarea name="details" placeholder="More details about it if possible" rows="4" class="w-full bg-[#25262b] border border-transparent focus:border-zinc-600 text-zinc-200 text-sm rounded-xl px-4 py-3.5 outline-none placeholder-zinc-500 transition resize-none hide-scroll shadow-inner"></textarea>
-                
-                <button type="submit" class="w-full bg-[#d76145] hover:bg-[#eb6a4b] text-white font-bold py-3.5 rounded-xl transition duration-300 mt-4 shadow-[0_4px_15px_rgba(215,97,69,0.3)]">
-                    Send Request
-                </button>
+
+            <div class="dialog-icon mb-5" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.6-.7L3 21l1.8-5.1A8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4Z"/></svg>
+            </div>
+
+            <h2 id="bug-modal-title" class="font-display text-[24px] font-semibold tracking-[-0.03em] text-[var(--text)]">Send a request</h2>
+            <p class="mt-2 max-w-sm pr-6 text-[12.5px] leading-relaxed text-[var(--text-3)]">
+                Missing a title, or found something broken? Send the details and it lands with the team.
+            </p>
+
+            <form id="bug-form" action="https://formspree.io/f/mwvznpjo" method="POST" class="mt-6 space-y-2.5">
+                <label for="bug-anime" class="sr-only">Anime name or bug title</label>
+                <input id="bug-anime" type="text" name="anime_name" placeholder="Anime name or bug title" required class="field">
+
+                <label for="bug-link" class="sr-only">Link to MyAnimeList, AniList, AniDB, or another source</label>
+                <input id="bug-link" type="text" name="link" placeholder="Link to MAL, AniList, AniDB (optional)" class="field">
+
+                <label for="bug-details" class="sr-only">More details</label>
+                <textarea id="bug-details" name="details" rows="4" placeholder="Anything else that helps" class="field hide-scroll"></textarea>
+
+                <button type="submit" class="btn-accent mt-2 w-full" style="height:46px;">Send request</button>
             </form>
         </div>
     </div>
 
     <script src="script.js"></script>
+    <script>
+        (() => {
+            const header = document.getElementById('site-header');
+            const menuRoots = Array.from(document.querySelectorAll('[data-menu-root]'));
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const modal = document.getElementById('bug-modal');
+
+            const syncHeader = () => {
+                if (header) header.classList.toggle('is-scrolled', window.scrollY > 12);
+            };
+            syncHeader();
+            window.addEventListener('scroll', syncHeader, { passive: true });
+
+            const closeMenus = (except) => {
+                menuRoots.forEach((root) => {
+                    if (root === except) return;
+                    root.classList.remove('is-open');
+                    const btn = root.querySelector('[data-menu-button]');
+                    if (btn) btn.setAttribute('aria-expanded', 'false');
+                });
+            };
+
+            menuRoots.forEach((root) => {
+                const btn = root.querySelector('[data-menu-button]');
+                const panel = root.querySelector('[data-menu]');
+                if (!btn || !panel) return;
+
+                btn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    const willOpen = !root.classList.contains('is-open');
+                    closeMenus(root);
+                    root.classList.toggle('is-open', willOpen);
+                    btn.setAttribute('aria-expanded', String(willOpen));
+                });
+
+                panel.addEventListener('click', (event) => event.stopPropagation());
+            });
+
+            const setMobile = (open) => {
+                if (!mobileMenu || !mobileBtn) return;
+                mobileMenu.classList.toggle('is-open', open);
+                mobileMenu.setAttribute('aria-hidden', String(!open));
+                mobileBtn.setAttribute('aria-expanded', String(open));
+                const openIcon = mobileBtn.querySelector('.menu-open-icon');
+                const closeIcon = mobileBtn.querySelector('.menu-close-icon');
+                if (openIcon) openIcon.classList.toggle('hidden', open);
+                if (closeIcon) closeIcon.classList.toggle('hidden', !open);
+            };
+
+            mobileBtn?.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setMobile(!mobileMenu.classList.contains('is-open'));
+                closeMenus();
+            });
+            mobileMenu?.addEventListener('click', (event) => event.stopPropagation());
+
+            document.addEventListener('click', () => {
+                closeMenus();
+                setMobile(false);
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key !== 'Escape') return;
+                closeMenus();
+                setMobile(false);
+                if (modal && !modal.classList.contains('hidden') && typeof window.closeBugModal === 'function') {
+                    window.closeBugModal();
+                }
+            });
+
+            document.getElementById('apply-filters-btn')?.addEventListener('click', () => closeMenus());
+
+            if (modal) {
+                new MutationObserver(() => {
+                    document.documentElement.style.overflow = modal.classList.contains('hidden') ? '' : 'hidden';
+                }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+            }
+
+            const enhanceClickable = (container) => {
+                if (!container) return;
+                const enhance = () => {
+                    container.querySelectorAll(':scope > div').forEach((card) => {
+                        if (card.dataset.enhanced) return;
+                        card.dataset.enhanced = '1';
+                        card.tabIndex = 0;
+                        card.setAttribute('role', 'link');
+                        const title = card.querySelector('h3, h4')?.textContent?.trim();
+                        if (title) card.setAttribute('aria-label', title);
+                        card.addEventListener('keydown', (event) => {
+                            if (event.key !== 'Enter' && event.key !== ' ') return;
+                            event.preventDefault();
+                            card.click();
+                        });
+                    });
+                };
+                enhance();
+                new MutationObserver(enhance).observe(container, { childList: true });
+            };
+
+            ['anime-grid', 'cw-grid', 'col-airing', 'col-upcoming', 'col-popular'].forEach((id) => {
+                enhanceClickable(document.getElementById(id));
+            });
+        })();
+    </script>
 </body>
 </html>

@@ -326,22 +326,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function executeAdvancedSearch(baseQuery = null) {
+        if (!animeGrid) return;
         const searchVal = document.getElementById("search-input")?.value.trim();
         const query = baseQuery || searchVal;
         const typeEl = document.getElementById('filter-type');
         const genreEl = document.getElementById('filter-genre');
+        const statusEl = document.getElementById('filter-status');
+        const sortEl = document.getElementById('filter-sort');
         
         let url = `https://api.jikan.moe/v4/anime?sfw`;
         if (query) url += `&q=${encodeURIComponent(query)}`;
         if (typeEl?.value) url += `&type=${typeEl.value}`;
         if (genreEl?.value) url += `&genres=${genreEl.value}`;
+        if (statusEl?.value) url += `&status=${statusEl.value}`;
+        if (sortEl?.value === 'score') url += `&order_by=score&sort=desc`;
+        if (sortEl?.value === 'popularity') url += `&order_by=popularity&sort=desc`;
         if (gridHeader) gridHeader.textContent = query ? `Search: "${query}"` : "Filtered Results";
         fetchAnimeData(url, 1);
     }
 
-    document.getElementById("search-btn")?.addEventListener("click", (e) => { e.preventDefault(); executeAdvancedSearch(); });
-    document.getElementById("search-input")?.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); executeAdvancedSearch(); } });
-    document.getElementById('apply-filters-btn')?.addEventListener("click", (e) => { e.preventDefault(); executeAdvancedSearch(); });
+    document.getElementById("search-btn")?.addEventListener("click", (e) => { if (!animeGrid) return; e.preventDefault(); executeAdvancedSearch(); });
+    document.getElementById("search-input")?.addEventListener("keypress", (e) => { if (!animeGrid) return; if (e.key === "Enter") { e.preventDefault(); executeAdvancedSearch(); } });
+    document.getElementById('apply-filters-btn')?.addEventListener("click", (e) => { if (!animeGrid) return; e.preventDefault(); executeAdvancedSearch(); });
 
     function renderPagination(paginationData, currentPage) {
         if (!paginationContainer || !paginationData?.last_visible_page || paginationData.last_visible_page <= 1) return paginationContainer.innerHTML = "";
@@ -359,13 +365,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const urlParams = new URLSearchParams(window.location.search);
     const params = { q: urlParams.get('q'), view: urlParams.get('view'), type: urlParams.get('type'), genreId: urlParams.get('genre_id'), letter: urlParams.get('letter') };
 
-    if (params.q) executeAdvancedSearch(params.q);
-    else if (params.letter) { gridHeader.textContent = `Starts with "${params.letter === '1' ? '#' : params.letter}"`; fetchAnimeData(`https://api.jikan.moe/v4/anime?letter=${params.letter}&order_by=popularity&sort=asc`); }
-    else if (params.genreId) { gridHeader.textContent = `Genre Results`; fetchAnimeData(`https://api.jikan.moe/v4/anime?genres=${params.genreId}&order_by=popularity&sort=asc`); }
-    else if (params.type) { gridHeader.textContent = `Top ${params.type.toUpperCase()}`; fetchAnimeData(`https://api.jikan.moe/v4/anime?type=${params.type}&order_by=popularity&sort=desc`); }
-    else if (params.view === 'new') { gridHeader.textContent = "Newly Released"; fetchAnimeData("https://api.jikan.moe/v4/seasons/now"); }
-    else if (params.view === 'upcoming') { gridHeader.textContent = "Upcoming Releases"; fetchAnimeData("https://api.jikan.moe/v4/seasons/upcoming"); }
-    else { gridHeader.textContent = "Trending Now"; fetchAnimeData("https://api.jikan.moe/v4/top/anime"); }
+    if (animeGrid && gridHeader) {
+        const prefill = (id, value) => {
+            const el = document.getElementById(id);
+            if (el && value) el.value = value;
+        };
+        prefill('filter-type', params.type);
+        prefill('filter-genre', params.genreId || urlParams.get('genres'));
+        prefill('filter-status', urlParams.get('status'));
+
+        if (params.q) executeAdvancedSearch(params.q);
+        else if (params.letter) { gridHeader.textContent = `Starts with "${params.letter === '1' ? '#' : params.letter}"`; fetchAnimeData(`https://api.jikan.moe/v4/anime?letter=${params.letter}&order_by=popularity&sort=asc`); }
+        else if (params.genreId) { gridHeader.textContent = `Genre Results`; fetchAnimeData(`https://api.jikan.moe/v4/anime?genres=${params.genreId}&order_by=popularity&sort=asc`); }
+        else if (params.type) { gridHeader.textContent = `Top ${params.type.toUpperCase()}`; fetchAnimeData(`https://api.jikan.moe/v4/anime?type=${params.type}&order_by=popularity&sort=desc`); }
+        else if (params.view === 'new') { gridHeader.textContent = "Newly Released"; fetchAnimeData("https://api.jikan.moe/v4/seasons/now"); }
+        else if (params.view === 'upcoming') { gridHeader.textContent = "Upcoming Releases"; fetchAnimeData("https://api.jikan.moe/v4/seasons/upcoming"); }
+        else { gridHeader.textContent = "Trending Now"; fetchAnimeData("https://api.jikan.moe/v4/top/anime"); }
+    }
 
     const loadMiniListsSequentially = async () => {
         try {
@@ -380,7 +396,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (e) { console.error("Error loading side lists:", e); }
     };
     
-    loadMiniListsSequentially();
+    if (document.getElementById('col-airing')) loadMiniListsSequentially();
 });
 
 // --- MODAL ANIMATION & FORMSPREE SUBMISSION CONTROLS ---
@@ -404,12 +420,19 @@ window.closeBugModal = function() {
     }, 300);
 };
 
+const THEME_KEY = 'animeTheme';
+try {
+    if (localStorage.getItem(THEME_KEY) === 'light') document.body.classList.add('light-mode');
+} catch (error) { /* storage unavailable */ }
+
 const toggle = document.getElementById('theme-toggle');
 if (toggle) {
     toggle.addEventListener('click', () => {
         document.body.classList.toggle('light-mode');
         const isLight = document.body.classList.contains('light-mode');
-        document.getElementById('theme-icon').textContent = isLight ? '🌙' : '☀️';
+        const icon = document.getElementById('theme-icon');
+        if (icon) icon.textContent = isLight ? '🌙' : '☀️';
+        try { localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark'); } catch (error) { /* storage unavailable */ }
     });
 }
 
