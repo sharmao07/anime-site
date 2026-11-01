@@ -1,68 +1,103 @@
 # Anime.TV 🎬
+### State-of-the-Art 2026 Dark Streaming & Discovery Platform
 
-A premium, fast, and high-performance cinematic anime directory and portal built entirely with vanilla frontend technologies. Anime.TV delivers an immersive browsing experience complete with fluid animations, dynamic data streaming, and an advanced layout built to handle massive content catalogs seamlessly.
+[![Live Demo](https://img.shields.io/badge/Demo-anime--tv--67.vercel.app-ff4a3d?style=for-the-badge&logo=vercel)](https://anime-tv-67.vercel.app/)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![JavaScript](https://img.shields.io/badge/Vanilla_JS-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Jikan API](https://img.shields.io/badge/Jikan_v4-MyAnimeList-2E51A2?style=for-the-badge)](https://jikan.moe/)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-🌐 **Live Demo:** [anime-tv-67.vercel.app](https://anime-tv-67.vercel.app/)
-
----
-
-## ✨ Features
-
-* **Cinematic Spotlight Carousel:** An interactive, auto-cycling hero banner showcasing top trending titles, seamlessly integrated with the **TMDB API** to pull high-resolution background assets dynamically.
-* **Advanced Multi-Filter System:** Filter down content instantly by format (TV, Movie, OVA, Special), Genre clusters, Release Status, or sort indexing (Score, Popularity, Favorites) utilizing efficient query structures.
-* **Smart Content Architecture:** Fully reactive responsive grids displaying anime cards equipped with micro-details (type, rating flags, titles) and interactive hover overlays presenting snapshot synopses.
-* **Persistent "Continue Watching" Engine:** Client-side tracking powered by `localStorage` to preserve user watch history and display active sessions directly on the dashboard.
-* **A-Z Alphabetical Indexing:** An elegant dropdown multi-row locator map routing requests instantly based on character starting nodes.
-* **Tactile Interactive Layer:** Premium state-managed Light/Dark theme configuration coupled with a localized cursor click-ripple simulation engine for optimized feedback.
-* **Serverless Request System:** Integration via Formspree creating a frictionless pipeline for users to report bugs or submit missing title catalog requests.
+An award-winning, state-of-the-art anime streaming and exploration interface crafted entirely with **Vanilla JavaScript (ES6+)**, **HTML5**, and **Tailwind CSS**. Designed in the visual language of next-generation entertainment platforms (Netflix, Crunchyroll, Disney+, Max), Anime.TV fuses high-density metadata browsing with fluid micro-interactions, cinematic backdrops, and resilient API data fetching.
 
 ---
 
-## 🛠️ Tech Stack
+## 🌟 Visual Design System & Aesthetic (2026 Edition)
 
-* **Frontend Structure:** HTML5 (Semantic Layouts)
-* **Styling Framework:** Tailwind CSS (Utility-first styling core)
-* **Dynamic Animations:** Custom CSS3 keyframing (Theme shifts, click effects)
-* **Programming Core:** Vanilla JavaScript (ES6+ Asynchronous architecture, Fetch API)
-* **Data Providers:** * **Jikan API** (Official open-source MyAnimeList data engine)
-  * **The Movie Database (TMDB) API** (High-fidelity backdrop media acquisition)
+* **Obsidian Dark Palette (`#050507`):** Multi-tier surface elevations (`#08080b`, `#0d0d13`, `#14141c`) delivering authentic visual depth and eye-comfort for extended sessions.
+* **1px Glassmorphism:** Subtle borders (`rgba(255, 255, 255, 0.08)` to `0.16`) coupled with `backdrop-filter: blur(20px) saturate(160%)` creating tactile floating cards and navigation bars.
+* **Cinematic Headings & Editorial Typography:** Built with Google Fonts:
+  * **Sora:** Bold, geometric display font for hero headlines and section titles (`tracking-[-0.04em]`).
+  * **Manrope:** Balanced geometric sans-serif for fluid reading and descriptions.
+  * **JetBrains Mono:** Tabular numeric data, episode codes, runtimes, and ratings badges.
+* **Micro-Interactions Without Layout Shift:** Poster cards smoothly scale and reveal synopsis overlays with backdrop blur while strictly maintaining rigid 2:3 grid coordinates.
 
 ---
 
-## 📂 Project Structure
+## ✨ Feature Highlights
+
+### 1. Edge-to-Edge Spotlight Carousel
+* Full-bleed hero banner cycling through the top trending series.
+* Multi-directional dark gradient masks ensure complete text readability without dimming background key art.
+* Floating thumbnail carousel controls in the bottom-right with active state glowing borders and smooth scale transitions.
+
+### 2. Multi-Filter & Instant Search Console
+* Filter simultaneously by **Type** (TV, Movie, OVA, Special, ONA), **Genre** (Action, Drama, Fantasy, Sci-Fi, etc.), **Status** (Airing, Complete, Upcoming), and **Sort** (Score, Popularity).
+* Instant search execution on both the landing portal (`index.html`) and the main catalogue (`home.html`).
+
+### 3. Persistent "Continue Watching" Shelf
+* Client-side progress tracking powered by `localStorage`.
+* Horizontal scrolling shelf with dynamic watch-time progress bars and hover play-state overlays.
+
+### 4. 3-Column Bento Box Sidebars
+* Dedicated vertical rankings for **Airing This Season**, **Upcoming Releases**, and **Top Popular Titles**.
+* The `#1` item in each column is elevated to a wide 16:9 mini-hero banner, while items `#2`–`#5` are structured as high-density list items.
+
+### 5. Seamless Stream Player
+* Embedded Plyr engine with custom accent controls, theater mode, dynamic episode selector queue, and server source switching.
+
+### 6. Built-in Feedback & Title Requests
+* Serverless Formspree submission dialog with animated modal transitions and escape-key handling.
+
+---
+
+## 🛡️ API Resilience & Reliability
+
+The application connects to the open **Jikan API v4 (MyAnimeList)** and **AniList GraphQL**:
+
+* **Automatic 429 Rate-Limit Handling:** Automatically detects HTTP 429 responses, invokes exponential backoff with jitter, and retries seamlessly without failing silently.
+* **Client-Side Session Caching:** Frequently queried endpoints (Trending, Top Movies, Seasons) are cached in `sessionStorage` with a 5-minute TTL to drastically cut down network roundtrips.
+* **Staggered Sequential Fetching:** Secondary sidebar feeds are throttled with intentional micro-delays (1,200ms) to ensure concurrent requests never overwhelm external rate limits.
+
+---
+
+## 📂 Project Architecture
 
 ```text
-├── index.html        # Premium cinematic landing interface
-├── home.html         # Main app browsing directory and filtering dashboard
-├── info.html         # Anime deep-dive layout with dynamic cast rendering
-├── script.js         # Core logic (Carousel management, sorting, grid building)
-├── stream.js         # Stream modal processing & server routing engines
-├── style.css         # Styling rules for theme transitions and ripple effects
-└── terms.html/etc.   # Auxiliary platform documentation pages
+├── index.html        # High-conversion cinematic entry portal & search console
+├── home.html         # Main app dashboard (Spotlight hero, catalog grid, bento sidebar)
+├── player.html       # Video streaming theater with episode queue & server picker
+├── info.html         # Deep-dive title breakdown (Character roster, trailers, stream links)
+├── genres.html       # Visual genre index with direct filtering hooks
+├── history.html      # Watch history manager & playback resumption dashboard
+├── privacy.html      # Privacy policy documentation
+├── terms.html        # Terms of service documentation
+├── script.js         # Core application engine (Spotlight, API routing, search, pagination)
+├── stream.js         # Player stream routing, source parsing, and episode logic
+├── ui.css            # Reusable 2026 design tokens & glassmorphic component utilities
+├── ui.js             # Shared navigation behavior, dropdown menus & modal lifecycle
+├── style.css         # Global stylesheet (Transitions, scrollbars, ripple engine)
+└── start-bg.jpg      # High-fidelity cinematic landing backdrop
 ```
 
 ---
 
-## 🚀 Local Setup & Installation
+## 🚀 Quickstart & Local Development
 
-Since this project leverages a clean, serverless frontend ecosystem, setting it up locally takes seconds.
+No complex build steps, node modules, or bundlers required. Everything runs natively in modern browsers.
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/ojussharma07/anime-site.git](https://github.com/ojussharma07/anime-site.git)
-   ```
-
-2. **Navigate into the directory:**
-   ```bash
+   git clone https://github.com/sharmao07/anime-site.git
    cd anime-site
    ```
 
-3. **Launch the platform:**
-   * Simply open `index.html` inside any modern web browser.
-   * *Alternatively*, run it through a local development server such as the **Live Server** extension in VS Code to ensure smooth path mapping.
+2. **Run locally:**
+   * Open `index.html` directly in any web browser.
+   * Or run with any local static HTTP server (e.g., VS Code **Live Server**, `python3 -m http.server 8000`, or `npx serve`).
 
 ---
 
-## 📄 License & Disclaimer
+## ⚖️ Disclaimer
 
-Anime.TV does not parse, store, or host physical media streams on local cloud directories. This program acts strictly as an educational content routing portal interface, pulling structural information and visual banners exclusively from publicly accessible metadata frameworks.
+Anime.TV is a frontend portfolio project designed for educational, research, and non-commercial purposes. It does not host, store, or stream media files on its servers. All anime metadata, imagery, and synopsis data are served through publicly accessible APIs (Jikan/MyAnimeList, AniList).

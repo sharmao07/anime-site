@@ -1,91 +1,179 @@
-/* =========================================
-   1. GLOBAL THEME TRANSITIONS
-   ========================================= */
-body { 
-    transition: background-color 0.3s ease, color 0.3s ease; 
-   zoom: 0.9; /* Forces the entire website to render at 90% scale */
+/* ==========================================================================
+   Anime.TV — Premium Global Stylesheet (2026 Edition)
+   Modern glassmorphic dark-theme foundation, micro-interactions & utility layers
+   ========================================================================== */
+
+/* --- 1. Root & Custom Properties Fallback --- */
+:root {
+    --bg-base: #050507;
+    --bg-elevated: #09090d;
+    --surface-glass: rgba(13, 13, 19, 0.72);
+    --surface-border: rgba(255, 255, 255, 0.08);
+    --surface-border-hover: rgba(255, 255, 255, 0.18);
+    --accent-primary: #ff4a3d;
+    --accent-glow: rgba(255, 74, 61, 0.35);
+    --accent-subtle: rgba(255, 74, 61, 0.12);
+    --text-primary: #f6f4f1;
+    --text-secondary: #a9a49f;
+    --text-muted: #6e6a66;
+    --ease-out-cubic: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* =========================================
-   2. CLICK RIPPLE EFFECT
-   ========================================= */
+/* --- 2. Base Element Resets & Scrollbars --- */
+html {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color 0.3s var(--ease-out-cubic), color 0.3s var(--ease-out-cubic);
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #050507;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    border: 2px solid #050507;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+/* Hide scrollbar utility */
+.hide-scroll::-webkit-scrollbar {
+    display: none;
+}
+.hide-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Text Selection */
+::selection {
+    background: var(--accent-primary);
+    color: #ffffff;
+}
+
+/* Focus Visible Accessibility */
+:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* --- 3. Interactive Click Ripple Effect --- */
 .ripple {
     position: fixed;
     border-radius: 50%;
-    background: rgba(99, 102, 241, 0.4);
+    background: radial-gradient(circle, rgba(255, 74, 61, 0.4) 0%, rgba(99, 102, 241, 0.2) 60%, transparent 100%);
     transform: scale(0);
-    animation: ripple-animation 0.6s linear;
+    animation: ripple-expansion 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
     pointer-events: none;
     z-index: 9999;
-}
-@keyframes ripple-animation {
-    to { transform: scale(4); opacity: 0; }
+    will-change: transform, opacity;
 }
 
-/* =========================================
-   3. LIGHT MODE THEME (Soft Gray Palette)
-   ========================================= */
+@keyframes ripple-expansion {
+    0% {
+        transform: scale(0);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(3.5);
+        opacity: 0;
+    }
+}
 
-/* 1. Background / Off-White */
+/* --- 4. Glassmorphic Surface Utilities --- */
+.glass-panel {
+    background: var(--surface-glass);
+    border: 1px solid var(--surface-border);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-panel-hover {
+    transition: transform 0.25s var(--ease-out-cubic), border-color 0.25s var(--ease-out-cubic), box-shadow 0.25s var(--ease-out-cubic);
+}
+.glass-panel-hover:hover {
+    border-color: var(--surface-border-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 28px 60px -25px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Glow Accents */
+.glow-accent {
+    box-shadow: 0 0 25px var(--accent-glow);
+}
+.glow-accent-hover:hover {
+    box-shadow: 0 0 35px var(--accent-glow);
+}
+
+/* --- 5. Media Card Hover Dynamics --- */
+.anime-card-hover {
+    transition: transform 0.35s var(--ease-out-cubic), border-color 0.3s ease, box-shadow 0.35s ease;
+}
+.anime-card-hover:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 74, 61, 0.6);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 74, 61, 0.25);
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* --- 6. Cohesive Light Mode Overrides --- */
 body.light-mode {
-    background-color: #F5F5F5 !important;
-    color: #333333 !important;
+    --bg-base: #f4f2ed;
+    --bg-elevated: #ffffff;
+    --surface-glass: rgba(255, 255, 255, 0.82);
+    --surface-border: rgba(18, 18, 24, 0.1);
+    --surface-border-hover: rgba(18, 18, 24, 0.22);
+    --text-primary: #15151c;
+    --text-secondary: #5e5b62;
+    --text-muted: #837f87;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
 }
 
-/* 2. Containers / Cards (Header, Footer, Hero, Bento Boxes) */
-/* Wildcard selection instantly catches all dark Tailwind classes */
-body.light-mode header,
-body.light-mode footer,
-body.light-mode #hero-banner,
-body.light-mode #bug-modal-content,
-body.light-mode [class*="bg-[#151518]"],
-body.light-mode [class*="bg-[#09090b]"],
-body.light-mode [class*="bg-zinc-900"],
-body.light-mode [class*="bg-zinc-800"] {
-    background-color: #E8E8E8 !important;
+body.light-mode ::-webkit-scrollbar-track {
+    background: #f4f2ed;
 }
-
-/* 3. Borders / Dividers */
-body.light-mode header,
-body.light-mode footer,
-body.light-mode [class*="border-zinc-800"],
-body.light-mode [class*="border-zinc-900"] {
-    border-color: #D3D3D3 !important;
+body.light-mode ::-webkit-scrollbar-thumb {
+    background: rgba(18, 18, 24, 0.18);
+    border: 2px solid #f4f2ed;
 }
-
-/* 4. Main Text Overrides */
-body.light-mode [class*="text-white"],
-body.light-mode [class*="text-zinc-100"],
-body.light-mode h1,
-body.light-mode h2,
-body.light-mode h3 {
-    color: #333333 !important;
-}
-
-/* 5. Muted Text / Icons */
-body.light-mode [class*="text-zinc-300"],
-body.light-mode [class*="text-zinc-400"],
-body.light-mode [class*="text-zinc-500"] {
-    color: #808080 !important;
-}
-
-/* 6. Form Inputs & Search Bar */
-body.light-mode input,
-body.light-mode select,
-body.light-mode textarea {
-    background-color: transparent !important; 
-    color: #333333 !important;
-}
-body.light-mode input::placeholder,
-body.light-mode textarea::placeholder {
-    color: #808080 !important;
-}
-
-/* 7. Hero Banner Gradient Fixes */
-/* Overwrites the pitch-black overlays with soft gray gradients */
-body.light-mode #hero-banner .bg-gradient-to-t {
-    background: linear-gradient(to top, #F5F5F5, rgba(245, 245, 245, 0.7), transparent) !important;
-}
-body.light-mode #hero-banner .bg-gradient-to-r {
-    background: linear-gradient(to right, #F5F5F5, rgba(245, 245, 245, 0.6), transparent) !important;
+body.light-mode ::-webkit-scrollbar-thumb:hover {
+    background: rgba(18, 18, 24, 0.35);
 }
